@@ -14,6 +14,10 @@ class ViewController: UIViewController {
     let myModel = TestModel()
     
     override func viewDidLoad() {
+        let cameraController: CameraController = CameraController()
+        cameraController.prepare(completionHandler: {(error) in
+            print(error)
+        })
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nil
     
