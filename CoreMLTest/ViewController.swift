@@ -19,6 +19,8 @@ class ViewController: UIViewController {
             print(error)
         })
         super.viewDidLoad()
+        print(myModel.model.modelDescription)
+
         // Do any additional setup after loading the view, typically from a nil
     
 //        guard let mlMultiArray1 = try? MLMultiArray(shape:[625,1, 1], dataType:MLMultiArrayDataType.double) else {

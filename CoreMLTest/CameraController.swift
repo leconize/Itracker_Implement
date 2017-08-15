@@ -23,6 +23,8 @@ class CameraController: NSObject{
         case unknown
     }
     
+    let testModel: TestModel = TestModel()
+    
     var captureSession: AVCaptureSession?
     var frontCamera: AVCaptureDevice?
     var frontCameraInput: AVCaptureInput?
@@ -116,11 +118,11 @@ class CameraController: NSObject{
             let leftEyeArray = preprocess(image: leftEyeImage)
             let rightEyeArray = preprocess(image: rightEyeImage)
             
-            let model = TestModel.init()
             do{
-                let result = try model.prediction(facegrid: facegrid!, image_face: faceArray!, image_left: leftEyeArray!, image_right: rightEyeArray!)
-                
-                print(result)
+                let result = try testModel.prediction(facegrid: facegrid!, image_face: faceArray!, image_left: leftEyeArray!, image_right: rightEyeArray!)
+                for index in 0...5{
+                    print(result.fc3[index])
+                }
             }
             catch{
                 
@@ -182,9 +184,7 @@ class CameraController: NSObject{
                 faceGridArray[index] = 0
             }
         }
-        
         return faceGridArray
-        
     }
     
     func getEyeImageRect(posX: CGFloat, posY: CGFloat, size: CGFloat) -> CGRect{
