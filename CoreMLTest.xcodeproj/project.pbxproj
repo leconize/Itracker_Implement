@@ -16,6 +16,8 @@
 		8D11F4051F3E014E00A2574D /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4031F3E013900A2574D /* CameraController.swift */; };
 		8D11F4071F3E020A00A2574D /* TestModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4061F3E020900A2574D /* TestModel.mlmodel */; };
 		8D11F4081F3E020A00A2574D /* TestModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4061F3E020900A2574D /* TestModel.mlmodel */; };
+		8D20A4651F42E59B00A3ED07 /* CalibrateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D20A4641F42E59B00A3ED07 /* CalibrateViewController.swift */; };
+		8D20A4661F42E59B00A3ED07 /* CalibrateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D20A4641F42E59B00A3ED07 /* CalibrateViewController.swift */; };
 		8D37EF461F3CEB5700F49B3A /* TestLoadMeanFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D37EF451F3CEB5700F49B3A /* TestLoadMeanFile.swift */; };
 		8D37EF471F3CEC4F00F49B3A /* rightmean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */; };
 		8D37EF481F3CEC4F00F49B3A /* rightmean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */; };
@@ -48,6 +50,7 @@
 		8D0A9ADB1F2DE18400E4F62C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D11F4031F3E013900A2574D /* CameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CameraController.swift; path = CoreMLTest/CameraController.swift; sourceTree = SOURCE_ROOT; };
 		8D11F4061F3E020900A2574D /* TestModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = TestModel.mlmodel; sourceTree = "<group>"; };
+		8D20A4641F42E59B00A3ED07 /* CalibrateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrateViewController.swift; sourceTree = "<group>"; };
 		8D2DC0251F3C6E96009EDDD0 /* facemean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = facemean.txt; sourceTree = "<group>"; };
 		8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = rightmean.txt; sourceTree = "<group>"; };
 		8D2DC0271F3C6E96009EDDD0 /* leftmean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = leftmean.txt; sourceTree = "<group>"; };
@@ -102,6 +105,7 @@
 				8D0A9ACB1F2DE18400E4F62C /* Assets.xcassets */,
 				8D0A9ACD1F2DE18400E4F62C /* LaunchScreen.storyboard */,
 				8D0A9AD01F2DE18400E4F62C /* Info.plist */,
+				8D20A4641F42E59B00A3ED07 /* CalibrateViewController.swift */,
 			);
 			path = CoreMLTest;
 			sourceTree = "<group>";
@@ -236,6 +240,7 @@
 				8D0A9AC71F2DE18400E4F62C /* ViewController.swift in Sources */,
 				8D0A9AC51F2DE18400E4F62C /* AppDelegate.swift in Sources */,
 				8D11F4071F3E020A00A2574D /* TestModel.mlmodel in Sources */,
+				8D20A4651F42E59B00A3ED07 /* CalibrateViewController.swift in Sources */,
 				8D11F4051F3E014E00A2574D /* CameraController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -246,6 +251,7 @@
 			files = (
 				8D37EF461F3CEB5700F49B3A /* TestLoadMeanFile.swift in Sources */,
 				8D0A9ADA1F2DE18400E4F62C /* CoreMLTestTests.swift in Sources */,
+				8D20A4661F42E59B00A3ED07 /* CalibrateViewController.swift in Sources */,
 				8D11F4081F3E020A00A2574D /* TestModel.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,6 +399,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -407,6 +414,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -422,9 +430,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTestTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTestTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CoreMLTest.app/CoreMLTest";
@@ -438,9 +448,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTestTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTestTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CoreMLTest.app/CoreMLTest";

@@ -12,8 +12,10 @@ import UIKit
 import AVFoundation
 import CoreML
 
+@available(iOS 11.0, *)
 class CameraController: NSObject{
     
+    // MARK:- Error
     enum CameraControllerError: Error {
         case captureSessionAlreadyRunning
         case captureSessionIsMissing
@@ -23,12 +25,27 @@ class CameraController: NSObject{
         case unknown
     }
     
+    // MARK:- Properties
     let testModel: TestModel = TestModel()
+    let imageCount = 0
     
     var captureSession: AVCaptureSession?
     var frontCamera: AVCaptureDevice?
     var frontCameraInput: AVCaptureInput?
     var videoOutput: AVCaptureVideoDataOutput?
+    
+    var isProcessing = false
+    
+    let cgContext: CGContext;
+    let ciContext: CIContext = CIContext()
+    var pixelData = [UInt8](repeating: 0, count: 200704)
+    
+    override init() {
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        self.cgContext = CGContext(data: &pixelData, width: 224, height: 224, bitsPerComponent: 8, bytesPerRow: 4 * 224, space: colorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
+        }
+    
+    // MARK:- CameraSetup
     
     func prepare(completionHandler: @escaping (Error?) -> Void ){
         
@@ -46,6 +63,7 @@ class CameraController: NSObject{
                     self.frontCamera = camera
                 }
             }
+            
             if(self.frontCamera == nil){
                 throw CameraControllerError.noCamerasAvailable
             }
@@ -69,19 +87,25 @@ class CameraController: NSObject{
             guard let captureSession = self.captureSession else { throw CameraControllerError.captureSessionIsMissing }
             
             self.videoOutput = AVCaptureVideoDataOutput()
-            videoOutput?.setSampleBufferDelegate(self, queue: DispatchQueue(label: "video data buffer"))
+            videoOutput!.setSampleBufferDelegate(self, queue: DispatchQueue(label: "video data buffer"))
             if captureSession.canAddOutput(self.videoOutput!) {
                 captureSession.addOutput(self.videoOutput!)
             }
-            captureSession.startRunning()
+            else{
+                throw CameraControllerError.inputsAreInvalid
+            }
+            self.captureSession?.startRunning()
+            
         }
         
         DispatchQueue(label: "prepare").async {
             do{
+                print("start")
                 createCaptureSession()
                 try configureCaptureDevice()
                 try addCaptureDevice()
                 try configureVideoOutput()
+                print("success")
             }
             catch{
                 DispatchQueue.main.async {
@@ -95,7 +119,10 @@ class CameraController: NSObject{
         }
     }
     
+    // MARK:- Detector
+    
     func detectEye(on image: CIImage){
+        
         let accuracy = [CIDetectorAccuracy: CIDetectorAccuracyLow]
         let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: accuracy)
         let faces = faceDetector?.features(in: image)
@@ -107,49 +134,77 @@ class CameraController: NSObject{
             if face.hasRightEyePosition{
                 print("Right eye bounds are \(face.rightEyePosition)")
             }
-            let sendImage = image.cropped(to: face.bounds)
-            let scale = sendImage.extent.size.width / 224
-            let faceScaleImage = scaleImage(sendImage, scale: Float(scale))
-            let leftEyeImage = image.cropped(to: getEyeImageRect(posX: face.leftEyePosition.x, posY: face.leftEyePosition.y, size: 224))
-            let rightEyeImage = image.cropped(to: getEyeImageRect(posX: face.rightEyePosition.x, posY: face.rightEyePosition.y, size: 224))
-            let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds)
             
-            let faceArray = preprocess(image: faceScaleImage)
-            let leftEyeArray = preprocess(image: leftEyeImage)
-            let rightEyeArray = preprocess(image: rightEyeImage)
-            
-            do{
-                let result = try testModel.prediction(facegrid: facegrid!, image_face: faceArray!, image_left: leftEyeArray!, image_right: rightEyeArray!)
-                for index in 0...5{
-                    print(result.fc3[index])
+            if face.hasRightEyePosition && face.hasLeftEyePosition{
+                if image.cgImage == nil{
+                    print("easy")
+                }
+                let sendImage = image.cropped(to: face.bounds)
+                
+                let leftEyeImage = image.cropped(to: getEyeImageRect(posX: face.leftEyePosition.x, posY: face.leftEyePosition.y, size: 224))
+                let rightEyeImage = image.cropped(to: getEyeImageRect(posX: face.rightEyePosition.x, posY: face.rightEyePosition.y, size: 224))
+                
+                let scale = 224 / sendImage.extent.size.width
+                let faceScaleImage = scaleImage(sendImage, scale: Float(scale))
+                
+                print("image = \(faceScaleImage)")
+                print("leftEye = \(leftEyeImage)")
+                print("rightEye = \(rightEyeImage)")
+                
+                let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds)
+                
+                let start = DispatchTime.now()
+                let end = DispatchTime.now()
+                let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds // <<<<< Difference in nano seconds (UInt64)
+                let timeInterval = Double(nanoTime) / 1_000_000_000 // Technically could overflow for long running tests
+                
+                print("Time to evaluate problem : \(timeInterval) seconds")
+
+                let faceArray = preprocess(image: faceScaleImage)
+                let leftEyeArray = preprocess(image: leftEyeImage)
+                let rightEyeArray = preprocess(image: rightEyeImage)
+                do{
+                    let start = DispatchTime.now()
+                    let result = try testModel.prediction(facegrid: facegrid!, image_face: faceArray!, image_left: leftEyeArray!, image_right: rightEyeArray!)
+                    print("result = ")
+                    for index in 0...5{
+                        print(result.fc3[index])
+                    }
+                    let end = DispatchTime.now()
+                    let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds // <<<<< Difference in nano seconds (UInt64)
+                    let timeInterval = Double(nanoTime) / 1_000_000_000 // Technically could overflow for long running tests
+
+                    print("Time to evaluate problem : \(timeInterval) seconds")
+                }
+                catch{
+                    print("error haha")
                 }
             }
-            catch{
-                
-            }
-            
         }
+        isProcessing = false
+        print("------END------")
     }
     
+    //MARK:- Preprocess Data
+    
     func preprocess(image: CIImage) -> MLMultiArray?{
-        
-        guard let pixels = image.pixelData() else { return nil }
-        guard let array = try? MLMultiArray(shape: [1, 3, 224, 224], dataType: .double) else {
+        guard let pixels = gereratePixelData(image: image) else {
+            return nil }
+        guard let array = try? MLMultiArray(shape: [3, 224, 224], dataType: .double) else {
             return nil
         }
-        
+
         let r = pixels.enumerated().filter { $0.offset % 4 == 0 }.map { $0.element }
         let g = pixels.enumerated().filter { $0.offset % 4 == 1 }.map { $0.element }
         let b = pixels.enumerated().filter { $0.offset % 4 == 2 }.map { $0.element }
-        
+
         let combination = r + g + b
         for (index, element) in combination.enumerated() {
-            array[index] = NSNumber(value: element)
+            if(index < 150528){
+                array[index] = NSNumber(value: element)
+            }
         }
-        
         return array
-        
-        
     }
     
     func calculateFaceGrid(imageBound: CGRect, gridSize:CGFloat, faceBound:CGRect) -> MLMultiArray?{
@@ -188,7 +243,8 @@ class CameraController: NSObject{
     }
     
     func getEyeImageRect(posX: CGFloat, posY: CGFloat, size: CGFloat) -> CGRect{
-        return CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
+        let reg = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
+        return reg
     }
     
     func scaleImage(_ image: CIImage, scale:Float) -> CIImage{
@@ -200,30 +256,42 @@ class CameraController: NSObject{
     }
 }
 
+@available(iOS 11.0, *)
 extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate{
-    
+
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        DispatchQueue(label: "getPos").async {
-            let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-            let image = CIImage.init(cvImageBuffer: imageBuffer!)
-            self.detectEye(on: image)
+        if(!isProcessing){
+            DispatchQueue.global(qos: .background).async {
+                let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+                var image = CIImage.init(cvImageBuffer: imageBuffer!)
+                image = image.oriented(CGImagePropertyOrientation(rawValue: 5)!)
+                self.isProcessing = true
+                self.detectEye(on: image)
+            }
         }
+    }
+    
+    func gereratePixelData(image:CIImage) -> [UInt8]?{
+        guard let cgImage = ciContext.createCGImage(image, from: image.extent) else {
+            return nil
+        }
+        cgContext.draw(cgImage, in: CGRect(x: 0, y: 0, width: image.extent.width, height: image.extent.height))
+        return self.pixelData
     }
 }
 
 extension CIImage{
     func pixelData() -> [UInt8]? {
-        
         let dataSize = extent.size.width * extent.size.height * 4
         var pixelData = [UInt8](repeating: 0, count: Int(dataSize))
-        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let context = CGContext(data: &pixelData, width: Int(extent.size.width), height: Int(extent.size.height), bitsPerComponent: 8, bytesPerRow: 4 * Int(extent.size.width), space: colorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)
-        
-        guard let cgImage = self.cgImage else { return nil }
+        let ciContext = CIContext()
+        guard let cgImage = ciContext.createCGImage(self, from: self.extent) else {
+            return nil }
         context?.draw(cgImage, in: CGRect(x: 0, y: 0, width: extent.size.width, height: extent.size.height))
-        
         return pixelData
     }
+    
 }
 
