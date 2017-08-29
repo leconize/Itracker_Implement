@@ -25,6 +25,9 @@
 		8D37EF4A1F3CEC5300F49B3A /* leftmean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0271F3C6E96009EDDD0 /* leftmean.txt */; };
 		8D37EF4B1F3CEC5600F49B3A /* facemean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0251F3C6E96009EDDD0 /* facemean.txt */; };
 		8D37EF4C1F3CEC5600F49B3A /* facemean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0251F3C6E96009EDDD0 /* facemean.txt */; };
+		8D8C52641F4D518600080D77 /* EyeGazeLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */; };
+		8D8C52651F4D518600080D77 /* EyeGazeLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */; };
+		8DC9E64A1F542A8E007DAE7D /* MeanValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC9E6491F542A8E007DAE7D /* MeanValues.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +58,8 @@
 		8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = rightmean.txt; sourceTree = "<group>"; };
 		8D2DC0271F3C6E96009EDDD0 /* leftmean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = leftmean.txt; sourceTree = "<group>"; };
 		8D37EF451F3CEB5700F49B3A /* TestLoadMeanFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLoadMeanFile.swift; sourceTree = "<group>"; };
+		8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeGazeLogic.swift; sourceTree = "<group>"; };
+		8DC9E6491F542A8E007DAE7D /* MeanValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeanValues.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +104,7 @@
 				8D11F4041F3E013D00A2574D /* meanFile */,
 				8D0A9AC41F2DE18400E4F62C /* AppDelegate.swift */,
 				8D11F4031F3E013900A2574D /* CameraController.swift */,
+				8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */,
 				8D0A9AC61F2DE18400E4F62C /* ViewController.swift */,
 				8D11F4061F3E020900A2574D /* TestModel.mlmodel */,
 				8D0A9AC81F2DE18400E4F62C /* Main.storyboard */,
@@ -106,6 +112,7 @@
 				8D0A9ACD1F2DE18400E4F62C /* LaunchScreen.storyboard */,
 				8D0A9AD01F2DE18400E4F62C /* Info.plist */,
 				8D20A4641F42E59B00A3ED07 /* CalibrateViewController.swift */,
+				8DC9E6491F542A8E007DAE7D /* MeanValues.swift */,
 			);
 			path = CoreMLTest;
 			sourceTree = "<group>";
@@ -241,6 +248,8 @@
 				8D0A9AC51F2DE18400E4F62C /* AppDelegate.swift in Sources */,
 				8D11F4071F3E020A00A2574D /* TestModel.mlmodel in Sources */,
 				8D20A4651F42E59B00A3ED07 /* CalibrateViewController.swift in Sources */,
+				8DC9E64A1F542A8E007DAE7D /* MeanValues.swift in Sources */,
+				8D8C52641F4D518600080D77 /* EyeGazeLogic.swift in Sources */,
 				8D11F4051F3E014E00A2574D /* CameraController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -250,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D37EF461F3CEB5700F49B3A /* TestLoadMeanFile.swift in Sources */,
+				8D8C52651F4D518600080D77 /* EyeGazeLogic.swift in Sources */,
 				8D0A9ADA1F2DE18400E4F62C /* CoreMLTestTests.swift in Sources */,
 				8D20A4661F42E59B00A3ED07 /* CalibrateViewController.swift in Sources */,
 				8D11F4081F3E020A00A2574D /* TestModel.mlmodel in Sources */,

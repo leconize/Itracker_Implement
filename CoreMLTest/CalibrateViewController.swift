@@ -15,7 +15,7 @@ class CalibrateViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        arc4random_uniform(UInt32())
+        
         //let screenBound: CGRect = UIScreen.main.bounds
     }
     
