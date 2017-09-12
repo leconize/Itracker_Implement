@@ -11,11 +11,20 @@ import CoreImage
 import CoreML
 
 protocol EyeGazeLogicProtocol {
-    func detectEye(on image:CIImage) -> Void
+    func detectEye(on image:CIImage) throws -> PredictPoint?
 }
 
 enum PreprocessError: Error{
-    case emptyPixelData
+    case faceImageError
+    case leftEyeError
+    case rightEyeError
+    case failToCreateFaceGrid
+}
+
+struct PredictPoint{
+    
+    let posX: NSNumber;
+    let posY: NSNumber;
 }
 
 @available(iOS 11.0, *)
@@ -25,7 +34,7 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     let itrackerModel:Itracker = Itracker()
     
     //MARK:- Protocol Method
-    func detectEye(on image: CIImage) -> Void {
+    func detectEye(on image: CIImage) throws -> PredictPoint?{
         let accuracy = [CIDetectorAccuracy: CIDetectorAccuracyLow]
         let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: accuracy)
         let faces = faceDetector?.features(in: image)
@@ -43,36 +52,41 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                 let leftEyeImage = image.cropped(to: getEyeImageRect(posX: face.leftEyePosition.x, posY: face.leftEyePosition.y, size: 224))
                 let rightEyeImage = image.cropped(to: getEyeImageRect(posX: face.rightEyePosition.x, posY: face.rightEyePosition.y, size: 224))
                 guard let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds) else {
-                    return
+                    throw PreprocessError.failToCreateFaceGrid
                 }
                 
                 do{
-                    
                     guard let facePixelBuffer = faceScaleImage.pixelBuffer else {
-                        throw PreprocessError.emptyPixelData
+                        print("face")
+                        throw PreprocessError.faceImageError
                     }
                     guard let leftEyePixelBuffer = leftEyeImage.pixelBuffer else {
-                        throw PreprocessError.emptyPixelData
+                        print("left")
+                        throw PreprocessError.leftEyeError
                     }
                     guard let rightEyePixelBuffer = rightEyeImage.pixelBuffer else {
-                        throw PreprocessError.emptyPixelData
+                        print("right")
+                        throw PreprocessError.rightEyeError
                     }
                     let result = try itrackerModel.prediction(facegrid: facegrid
                         , image_face: facePixelBuffer
                         , image_left: leftEyePixelBuffer
                         , image_right: rightEyePixelBuffer)
-                    
                     print("result = ")
                     for index in 0...5{
                         print(result.fc3[index])
                     }
+                    let predictPoint = PredictPoint(posX: result.fc3[0], posY: result.fc3[1])
+                    return predictPoint
+                    
                 }
                 catch{
-                    print("aaaaa")
+                    
+                    return nil
                 }
             }
-            
         }
+        return nil
     }
     
     //MARK:- Preprocess Method

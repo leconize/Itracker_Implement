@@ -71,9 +71,19 @@ class ViewController: UIViewController, CameraControllerDelegate {
     func didCaptureVideoFrame(image: CIImage) {
         if(!isProcessing){
             DispatchQueue.global(qos: .userInteractive).async {
-                self.isProcessing = true
-                //self.gazeLogic?.detectEye(on: image)
-                self.isProcessing = false
+                do {
+                    self.isProcessing = true
+                    guard (try self.gazeLogic?.detectEye(on: image)) != nil else {
+                        self.isProcessing = false
+                        return
+                    }
+                    self.isProcessing = false
+                }
+                catch{
+                    
+                }
+                
+                
             }
         }
     }
