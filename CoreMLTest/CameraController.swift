@@ -30,7 +30,6 @@ class CameraController: NSObject{
     }
     
     // MARK:- Properties
-    let testModel: TestModel = TestModel()
     let imageCount = 0
     
     var captureSession: AVCaptureSession?
@@ -84,7 +83,9 @@ class CameraController: NSObject{
         func configureVideoOutput() throws {
             guard let captureSession = self.captureSession else { throw CameraControllerError.captureSessionIsMissing }
             
+            let videoSetting: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
             self.videoOutput = AVCaptureVideoDataOutput()
+            videoOutput?.videoSettings = videoSetting
             videoOutput!.setSampleBufferDelegate(self, queue: DispatchQueue(label: "video data buffer"))
             if captureSession.canAddOutput(self.videoOutput!) {
                 captureSession.addOutput(self.videoOutput!)

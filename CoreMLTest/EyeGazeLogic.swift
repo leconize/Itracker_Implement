@@ -10,70 +10,22 @@ import Foundation
 import CoreImage
 import CoreML
 
+protocol EyeGazeLogicProtocol {
+    func detectEye(on image:CIImage) -> Void
+}
+
+enum PreprocessError: Error{
+    case emptyPixelData
+}
 
 @available(iOS 11.0, *)
-class EyeGazeLogic{
+class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Propreties
+    let itrackerModel:Itracker = Itracker()
     
-    
-    let ciContext: CIContext = CIContext()
-    var pixelData = [UInt8](repeating: 0, count: 200704)
-    let mlModel: TestModel = TestModel()
-    let cgContext: CGContext;
-    var faceMean: MeanValues
-    var leftEyeMean: MeanValues
-    var rightEyeMean: MeanValues
-    
-    
-    
-    
-    //MARK:- ClassSetup
-    init() {
-        let colorSpace = CGColorSpaceCreateDeviceRGB()
-        self.cgContext = CGContext(data: &pixelData, width: 224, height: 224, bitsPerComponent: 8, bytesPerRow: 4 * 224, space: colorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
-        faceMean = MeanValues(filename: "facemean")
-        leftEyeMean = MeanValues(filename: "leftmean")
-        rightEyeMean = MeanValues(filename: "rightmean")
-    }
-    
-    //MARK:- Setup Mean
-    func loadMean(file filename:String) -> String?{
-        do {
-            if let path = Bundle.main.path(forResource: filename, ofType: "txt"){
-                let data = try String(contentsOfFile:path, encoding: String.Encoding.utf8)
-                return data
-            }
-        }
-        catch{
-            return nil
-        }
-        return nil
-    }
-    
-    func meanTextToArray(text: String) -> [Double]?{
-        let textArray = text.components(separatedBy: "\n")
-        var array: [Double] = [Double](repeatElement(0, count: 150528))
-        var index = 0
-        for line in 0..<textArray.count{
-            if line != 0 && line != 225 && line != 450{
-                for column in textArray[line].components(separatedBy: " "){
-                    if column.trimmingCharacters(in: .whitespaces) != ""{
-                        guard let temp = Double(column) else {
-                            print(textArray[line])
-                            return nil
-                        }
-                        array[index] = temp
-                        index += 1
-                    }
-                }
-            }
-        }
-        return array
-    }
-    
-    // MARK:- Detector
-    func detectEye(on image: CIImage){
+    //MARK:- Protocol Method
+    func detectEye(on image: CIImage) -> Void {
         let accuracy = [CIDetectorAccuracy: CIDetectorAccuracyLow]
         let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: accuracy)
         let faces = faceDetector?.features(in: image)
@@ -84,89 +36,51 @@ class EyeGazeLogic{
             if face.hasRightEyePosition{
                 print("Right eye bounds are \(face.rightEyePosition)")
             }
-            
             if face.hasRightEyePosition && face.hasLeftEyePosition{
-                let sendImage = image.cropped(to: face.bounds)
-                
+                let faceImage = image.cropped(to: face.bounds)
+                let scale = 224 / faceImage.extent.size.width
+                let faceScaleImage = scaleImage(faceImage, scale: Float(scale))
                 let leftEyeImage = image.cropped(to: getEyeImageRect(posX: face.leftEyePosition.x, posY: face.leftEyePosition.y, size: 224))
                 let rightEyeImage = image.cropped(to: getEyeImageRect(posX: face.rightEyePosition.x, posY: face.rightEyePosition.y, size: 224))
-                
-                let scale = 224 / sendImage.extent.size.width
-                let faceScaleImage = scaleImage(sendImage, scale: Float(scale))
-                
-                print("image = \(faceScaleImage)")
-                print("leftEye = \(leftEyeImage)")
-                print("rightEye = \(rightEyeImage)")
-                
-                let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds)
-                
-                let faceArray = preprocess(image: faceScaleImage, meanArray: faceMean)
-                let leftEyeArray = preprocess(image: leftEyeImage, meanArray: leftEyeMean)
-                let rightEyeArray = preprocess(image: rightEyeImage, meanArray: rightEyeMean)
+                guard let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds) else {
+                    return
+                }
                 
                 do{
-                    let start = DispatchTime.now()
-                    let result = try mlModel.prediction(facegrid: facegrid!, image_face: faceArray!, image_left: leftEyeArray!, image_right: rightEyeArray!)
+                    
+                    guard let facePixelBuffer = faceScaleImage.pixelBuffer else {
+                        throw PreprocessError.emptyPixelData
+                    }
+                    guard let leftEyePixelBuffer = leftEyeImage.pixelBuffer else {
+                        throw PreprocessError.emptyPixelData
+                    }
+                    guard let rightEyePixelBuffer = rightEyeImage.pixelBuffer else {
+                        throw PreprocessError.emptyPixelData
+                    }
+                    let result = try itrackerModel.prediction(facegrid: facegrid
+                        , image_face: facePixelBuffer
+                        , image_left: leftEyePixelBuffer
+                        , image_right: rightEyePixelBuffer)
+                    
                     print("result = ")
                     for index in 0...5{
                         print(result.fc3[index])
                     }
-                    let end = DispatchTime.now()
-                    let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds // <<<<< Difference in nano seconds (UInt64)
-                    let timeInterval = Double(nanoTime) / 1_000_000_000 // Technically could overflow for long running tests
-                    
-                    print("Time to evaluate problem : \(timeInterval) seconds")
                 }
                 catch{
-                    print("error haha")
+                    print("aaaaa")
                 }
             }
+            
         }
     }
     
-    //MARK:- Preprocess Data
-    func preprocess(image: CIImage, meanArray:MeanValues) -> MLMultiArray?{
-        // MARK:- RGB check
-        func isRed(index:Int) -> Bool{
-            return (index % 4 == 0)
-        }
-        func isGreen(index:Int) -> Bool{
-            return (index%4 == 1)
-        }
-        func isBlue(index:Int) -> Bool{
-            return (index % 4 == 2)
-        }
-    
-        guard let pixels = gereratePixelData(image: image) else {
-            return nil }
-        let start = DispatchTime.now()
-        guard let array = try? MLMultiArray(shape: [3, 224, 224], dataType: .double) else {
-            return nil
-        }
-        //        50176
-        //        0,4, 8, 12, 16 -> 0,1,2,3,4,5,6 r
-        //        1,5,9,13,17 -> 50176,50177, 50178, 50179 g
-        //        2,6,10,14,18 -> 100352, 100353, 100354, 100355 b
-        for i in 0..<150528{
-            //bgr assign
-            if isRed(index: i){
-                array[i/4 + 100352] = (Double(exactly:pixels[i])! - meanArray.means[i/4 + 100352]) as NSNumber
-            }
-            else if isGreen(index: i){
-                array[i/4 + 50176] = (Double(exactly:pixels[i])! - meanArray.means[i/4 + 50176]) as NSNumber
-            }
-            else if isBlue(index: i){
-                array[i/4] = (Double(exactly:pixels[i])! - meanArray.means[i/4]) as NSNumber
-            }
-        }
-        let end = DispatchTime.now()
-        let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds // <<<<< Difference in nano seconds (UInt64)
-        let timeInterval = Double(nanoTime) / 1_000_000_000 // Technically could overflow for long running tests
-        print("aTime to evaluate problem : \(timeInterval) seconds")
-        return array
+    //MARK:- Preprocess Method
+    func getEyeImageRect(posX: CGFloat, posY: CGFloat, size: CGFloat) -> CGRect{
+        let reg = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
+        return reg
     }
     
-    //MARK:- Preprocess Implementation Detail
     func calculateFaceGrid(imageBound: CGRect, gridSize:CGFloat, faceBound:CGRect) -> MLMultiArray?{
         let scaleX = imageBound.width / gridSize
         let scaleY = imageBound.height / gridSize
@@ -202,11 +116,6 @@ class EyeGazeLogic{
         return faceGridArray
     }
     
-    func getEyeImageRect(posX: CGFloat, posY: CGFloat, size: CGFloat) -> CGRect{
-        let reg = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
-        return reg
-    }
-    
     func scaleImage(_ image: CIImage, scale:Float) -> CIImage{
         let filter = CIFilter(name: "CILanczosScaleTransform")!
         filter.setValue(image, forKey: "inputImage")
@@ -215,11 +124,4 @@ class EyeGazeLogic{
         return filter.value(forKey: "outputImage") as! CIImage
     }
     
-    func gereratePixelData(image:CIImage) -> [UInt8]?{
-        guard let cgImage = ciContext.createCGImage(image, from: image.extent) else {
-            return nil
-        }
-        cgContext.draw(cgImage, in: CGRect(x: 0, y: 0, width: image.extent.width, height: image.extent.height))
-        return self.pixelData
-    }
 }

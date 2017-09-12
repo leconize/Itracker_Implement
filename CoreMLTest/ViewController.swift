@@ -15,50 +15,64 @@ class ViewController: UIViewController, CameraControllerDelegate {
     //MARK:- Propreties
     let cameraController = CameraController()
     var isProcessing = false
-    let gazeLogic: EyeGazeLogic = EyeGazeLogic()
+    var gazeLogic: EyeGazeLogic?
     
-    let generateRandomCircle = false
+    let generateRandomCircle = true
+    var currentCircleX: UInt32?
+    var currentCircleY: UInt32?
+    let circleRadius: CGFloat = 20
     
-    var circleDrawTimer: Timer?
+    lazy var circleDrawTimer: Timer = Timer.init()
     
     //MARK:- ViewAction
     override func viewDidLoad() {
-        print(UIScreen.main.bounds)
         cameraController.prepare(completionHandler: {(error) in
             if let error = error{
                 print(error)
             }
         })
-        cameraController.delegate = self
+        DispatchQueue.global().async {
+            self.gazeLogic = EyeGazeLogic()
+            self.cameraController.delegate = self
+        }
+        
         if(generateRandomCircle){
             circleDrawTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(drawCircle), userInfo: nil, repeats: true)
         }
-
     }
     
     @objc func drawCircle(){
-        let circlePath = UIBezierPath(arcCenter: CGPoint(x: Double(exactly:arc4random_uniform(100) )!, y: Double(exactly:arc4random_uniform(100) )!)
-            , radius: CGFloat(20)
+        let screenRect = UIScreen.main.bounds
+        self.currentCircleX = arc4random_uniform(UInt32(screenRect.width-circleRadius)) + UInt32(circleRadius)
+        self.currentCircleY = arc4random_uniform(UInt32(screenRect.height-circleRadius)) + UInt32(circleRadius)
+        let circlePath = UIBezierPath(
+            arcCenter: CGPoint(x: Double(currentCircleX!)
+            , y: Double(currentCircleY!))
+            , radius: circleRadius
             , startAngle: CGFloat(0)
             , endAngle: CGFloat(Double.pi*2)
             , clockwise: true)
+         
         let shapelayer = CAShapeLayer()
         shapelayer.path = circlePath.cgPath
-        
-        shapelayer.fillColor = UIColor.clear.cgColor
+        shapelayer.fillColor = UIColor.red.cgColor
         shapelayer.strokeColor = UIColor.red.cgColor
         shapelayer.lineWidth = 3.0
-        self.view.layer.sublayers?.removeAll()
+        guard let layerCount = view.layer.sublayers?.count else {
+            return
+        }
+        if(layerCount == 3){
+            self.view.layer.sublayers?.removeLast()
+        }
         self.view.layer.addSublayer(shapelayer)
-        
     }
     
     //MARK:- DelegateMethod
     func didCaptureVideoFrame(image: CIImage) {
         if(!isProcessing){
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.isProcessing = true
-                self.gazeLogic.detectEye(on: image)
+                //self.gazeLogic?.detectEye(on: image)
                 self.isProcessing = false
             }
         }
