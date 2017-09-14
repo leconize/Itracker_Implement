@@ -81,6 +81,7 @@ class CameraController: NSObject{
         }
         
         func configureVideoOutput() throws {
+            
             guard let captureSession = self.captureSession else { throw CameraControllerError.captureSessionIsMissing }
             
             let videoSetting: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]

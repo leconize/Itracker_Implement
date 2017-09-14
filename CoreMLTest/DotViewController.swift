@@ -9,20 +9,37 @@
 import UIKit
 import CoreML
 
+struct DotPosition: Hashable{
+    
+    var x:UInt32
+    var y:UInt32
+
+    var hashValue: Int{
+        return x.hashValue * y.hashValue &* 16777619
+    }
+
+    static func ==(lhs: DotPosition, rhs: DotPosition) -> Bool {
+        return lhs.x == rhs.x && lhs.y == rhs.y
+    }
+
+}
+
 @available(iOS 11.0, *)
-class ViewController: UIViewController, CameraControllerDelegate {
+class DotViewController: UIViewController, CameraControllerDelegate {
     
     //MARK:- Propreties
-    let cameraController = CameraController()
-    var isProcessing = false
-    var gazeLogic: EyeGazeLogic?
-    
     let generateRandomCircle = true
-    var currentCircleX: UInt32?
-    var currentCircleY: UInt32?
+    let cameraController = CameraController()
     let circleRadius: CGFloat = 20
     
+    var dotCount = 0
+    var dotPosition: DotPosition = DotPosition(x: 0, y: 0)
+    var isProcessing = false
+    var gazeLogic: EyeGazeLogic?
+    var result: [DotPosition: [PredictPoint]] = [:]
     lazy var circleDrawTimer: Timer = Timer.init()
+    
+    
     
     //MARK:- ViewAction
     override func viewDidLoad() {
@@ -31,28 +48,29 @@ class ViewController: UIViewController, CameraControllerDelegate {
                 print(error)
             }
         })
+        self.drawCircle()
         DispatchQueue.global().async {
             self.gazeLogic = EyeGazeLogic()
             self.cameraController.delegate = self
         }
-        
-        if(generateRandomCircle){
-            circleDrawTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(drawCircle), userInfo: nil, repeats: true)
+        if(self.generateRandomCircle){
+            self.circleDrawTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.drawCircle), userInfo: nil, repeats: true)
         }
+        
+        
     }
     
     @objc func drawCircle(){
         let screenRect = UIScreen.main.bounds
-        self.currentCircleX = arc4random_uniform(UInt32(screenRect.width-circleRadius)) + UInt32(circleRadius)
-        self.currentCircleY = arc4random_uniform(UInt32(screenRect.height-circleRadius)) + UInt32(circleRadius)
+        self.dotPosition.x = arc4random_uniform(UInt32(screenRect.width-circleRadius)) + UInt32(circleRadius)
+        self.dotPosition.y = arc4random_uniform(UInt32(screenRect.height-circleRadius)) + UInt32(circleRadius)
         let circlePath = UIBezierPath(
-            arcCenter: CGPoint(x: Double(currentCircleX!)
-            , y: Double(currentCircleY!))
+            arcCenter: CGPoint(x: Double(self.dotPosition.x)
+            , y: Double(self.dotPosition.y))
             , radius: circleRadius
             , startAngle: CGFloat(0)
             , endAngle: CGFloat(Double.pi*2)
             , clockwise: true)
-         
         let shapelayer = CAShapeLayer()
         shapelayer.path = circlePath.cgPath
         shapelayer.fillColor = UIColor.red.cgColor
@@ -65,6 +83,18 @@ class ViewController: UIViewController, CameraControllerDelegate {
             self.view.layer.sublayers?.removeLast()
         }
         self.view.layer.addSublayer(shapelayer)
+        dotCount += 1
+        if(dotCount > 16){
+            self.performSegue(withIdentifier: "showPredictResultSegue", sender: nil)
+        }
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if(segue.identifier == "showPredictResultSegue"){
+            let destination  = segue.destination as! ShowResultViewController
+            destination.predictResults = result
+        }
     }
     
     //MARK:- DelegateMethod
@@ -73,17 +103,21 @@ class ViewController: UIViewController, CameraControllerDelegate {
             DispatchQueue.global(qos: .userInteractive).async {
                 do {
                     self.isProcessing = true
-                    guard (try self.gazeLogic?.detectEye(on: image)) != nil else {
+                    guard let result = try self.gazeLogic?.detectEye(on: image) else {
                         self.isProcessing = false
                         return
                     }
-                    self.isProcessing = false
+                    if self.result[self.dotPosition] != nil{
+                        self.result[self.dotPosition]!.append(result)
+                    }
+                    else{
+                        self.result[self.dotPosition] = [result]
+                    }
                 }
                 catch{
-                    
+                    print(error)
                 }
-                
-                
+                self.isProcessing = false
             }
         }
     }

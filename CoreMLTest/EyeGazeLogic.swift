@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import CoreImage
 import CoreML
 
@@ -23,8 +24,17 @@ enum PreprocessError: Error{
 
 struct PredictPoint{
     
-    let posX: NSNumber;
-    let posY: NSNumber;
+    var posX: Double;
+    var posY: Double;
+    
+    mutating func toScreenPoint() -> String{
+        let orientation = UIDevice.current.orientation
+        let dX = 18.61
+        let dY = 8.03
+        let dWidth = 58.5
+        let dHeight = 104.05
+        return ""
+    }
 }
 
 @available(iOS 11.0, *)
@@ -32,6 +42,8 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Propreties
     let itrackerModel:Itracker = Itracker()
+    var tempImage: CIImage?
+    let context: CIContext = CIContext()
     
     //MARK:- Protocol Method
     func detectEye(on image: CIImage) throws -> PredictPoint?{
@@ -54,18 +66,16 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                 guard let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds) else {
                     throw PreprocessError.failToCreateFaceGrid
                 }
-                
                 do{
-                    guard let facePixelBuffer = faceScaleImage.pixelBuffer else {
+                    guard let facePixelBuffer = toCreataImage(image: faceScaleImage) else {
                         print("face")
                         throw PreprocessError.faceImageError
                     }
-                    guard let leftEyePixelBuffer = leftEyeImage.pixelBuffer else {
+                    guard let leftEyePixelBuffer = toCreataImage(image: leftEyeImage) else {
                         print("left")
                         throw PreprocessError.leftEyeError
                     }
-                    guard let rightEyePixelBuffer = rightEyeImage.pixelBuffer else {
-                        print("right")
+                    guard let rightEyePixelBuffer = toCreataImage(image: rightEyeImage) else {
                         throw PreprocessError.rightEyeError
                     }
                     let result = try itrackerModel.prediction(facegrid: facegrid
@@ -76,15 +86,32 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                     for index in 0...5{
                         print(result.fc3[index])
                     }
-                    let predictPoint = PredictPoint(posX: result.fc3[0], posY: result.fc3[1])
+                    let predictPoint = PredictPoint(
+                        posX: Double(truncating: result.fc3[0])
+                        , posY: Double(truncating: result.fc3[1]))
                     return predictPoint
                     
                 }
                 catch{
-                    
+                    print(error)
                     return nil
                 }
             }
+        }
+        return nil
+    }
+    
+    //MARK:- repos
+    func toCreataImage(image: CIImage) -> CVPixelBuffer?{
+        var pixelBuffer: CVPixelBuffer? = nil
+        let status = CVPixelBufferCreate(kCFAllocatorDefault, 224, 224, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
+        if (status == kCVReturnSuccess) {
+            let context = CIContext()
+            context.render(image, to: pixelBuffer!, bounds: CGRect.init(x: 0, y: 0, width: 224, height: 224), colorSpace: CGColorSpaceCreateDeviceRGB())
+            return pixelBuffer!
+        }
+        else{
+            print("convert fail")
         }
         return nil
     }
