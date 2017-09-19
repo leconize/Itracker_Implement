@@ -8,21 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		8D0A9AC51F2DE18400E4F62C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A9AC41F2DE18400E4F62C /* AppDelegate.swift */; };
-		8D0A9AC71F2DE18400E4F62C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A9AC61F2DE18400E4F62C /* ViewController.swift */; };
+		8D0A9AC71F2DE18400E4F62C /* DotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A9AC61F2DE18400E4F62C /* DotViewController.swift */; };
 		8D0A9ACA1F2DE18400E4F62C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8D0A9AC81F2DE18400E4F62C /* Main.storyboard */; };
 		8D0A9ACC1F2DE18400E4F62C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D0A9ACB1F2DE18400E4F62C /* Assets.xcassets */; };
-		8D0A9ACF1F2DE18400E4F62C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8D0A9ACD1F2DE18400E4F62C /* LaunchScreen.storyboard */; };
 		8D0A9ADA1F2DE18400E4F62C /* CoreMLTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A9AD91F2DE18400E4F62C /* CoreMLTestTests.swift */; };
 		8D11F4051F3E014E00A2574D /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4031F3E013900A2574D /* CameraController.swift */; };
-		8D11F4071F3E020A00A2574D /* TestModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4061F3E020900A2574D /* TestModel.mlmodel */; };
-		8D11F4081F3E020A00A2574D /* TestModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4061F3E020900A2574D /* TestModel.mlmodel */; };
+		8D28FAB71F61212D00B8818C /* Itracker.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D28FAB61F61212D00B8818C /* Itracker.mlmodel */; };
 		8D37EF461F3CEB5700F49B3A /* TestLoadMeanFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D37EF451F3CEB5700F49B3A /* TestLoadMeanFile.swift */; };
-		8D37EF471F3CEC4F00F49B3A /* rightmean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */; };
-		8D37EF481F3CEC4F00F49B3A /* rightmean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */; };
-		8D37EF491F3CEC5300F49B3A /* leftmean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0271F3C6E96009EDDD0 /* leftmean.txt */; };
-		8D37EF4A1F3CEC5300F49B3A /* leftmean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0271F3C6E96009EDDD0 /* leftmean.txt */; };
-		8D37EF4B1F3CEC5600F49B3A /* facemean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0251F3C6E96009EDDD0 /* facemean.txt */; };
-		8D37EF4C1F3CEC5600F49B3A /* facemean.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8D2DC0251F3C6E96009EDDD0 /* facemean.txt */; };
+		8D8C52641F4D518600080D77 /* EyeGazeLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */; };
+		8D8C52651F4D518600080D77 /* EyeGazeLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */; };
+		8DC26B0F1F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */; };
+		8DC26B101F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,20 +34,18 @@
 /* Begin PBXFileReference section */
 		8D0A9AC11F2DE18400E4F62C /* CoreMLTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreMLTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D0A9AC41F2DE18400E4F62C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8D0A9AC61F2DE18400E4F62C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		8D0A9AC61F2DE18400E4F62C /* DotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotViewController.swift; sourceTree = "<group>"; };
 		8D0A9AC91F2DE18400E4F62C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8D0A9ACB1F2DE18400E4F62C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8D0A9ACE1F2DE18400E4F62C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8D0A9AD01F2DE18400E4F62C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D0A9AD51F2DE18400E4F62C /* CoreMLTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreMLTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D0A9AD91F2DE18400E4F62C /* CoreMLTestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLTestTests.swift; sourceTree = "<group>"; };
 		8D0A9ADB1F2DE18400E4F62C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D11F4031F3E013900A2574D /* CameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CameraController.swift; path = CoreMLTest/CameraController.swift; sourceTree = SOURCE_ROOT; };
-		8D11F4061F3E020900A2574D /* TestModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = TestModel.mlmodel; sourceTree = "<group>"; };
-		8D2DC0251F3C6E96009EDDD0 /* facemean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = facemean.txt; sourceTree = "<group>"; };
-		8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = rightmean.txt; sourceTree = "<group>"; };
-		8D2DC0271F3C6E96009EDDD0 /* leftmean.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = leftmean.txt; sourceTree = "<group>"; };
+		8D28FAB61F61212D00B8818C /* Itracker.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = Itracker.mlmodel; sourceTree = "<group>"; };
 		8D37EF451F3CEB5700F49B3A /* TestLoadMeanFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLoadMeanFile.swift; sourceTree = "<group>"; };
+		8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeGazeLogic.swift; sourceTree = "<group>"; };
+		8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowResultViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,14 +87,14 @@
 		8D0A9AC31F2DE18400E4F62C /* CoreMLTest */ = {
 			isa = PBXGroup;
 			children = (
-				8D11F4041F3E013D00A2574D /* meanFile */,
 				8D0A9AC41F2DE18400E4F62C /* AppDelegate.swift */,
 				8D11F4031F3E013900A2574D /* CameraController.swift */,
-				8D0A9AC61F2DE18400E4F62C /* ViewController.swift */,
-				8D11F4061F3E020900A2574D /* TestModel.mlmodel */,
+				8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */,
+				8D0A9AC61F2DE18400E4F62C /* DotViewController.swift */,
+				8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */,
+				8D28FAB61F61212D00B8818C /* Itracker.mlmodel */,
 				8D0A9AC81F2DE18400E4F62C /* Main.storyboard */,
 				8D0A9ACB1F2DE18400E4F62C /* Assets.xcassets */,
-				8D0A9ACD1F2DE18400E4F62C /* LaunchScreen.storyboard */,
 				8D0A9AD01F2DE18400E4F62C /* Info.plist */,
 			);
 			path = CoreMLTest;
@@ -114,16 +108,6 @@
 				8D37EF451F3CEB5700F49B3A /* TestLoadMeanFile.swift */,
 			);
 			path = CoreMLTestTests;
-			sourceTree = "<group>";
-		};
-		8D11F4041F3E013D00A2574D /* meanFile */ = {
-			isa = PBXGroup;
-			children = (
-				8D2DC0271F3C6E96009EDDD0 /* leftmean.txt */,
-				8D2DC0251F3C6E96009EDDD0 /* facemean.txt */,
-				8D2DC0261F3C6E96009EDDD0 /* rightmean.txt */,
-			);
-			path = meanFile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,12 +191,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D37EF4C1F3CEC5600F49B3A /* facemean.txt in Resources */,
-				8D0A9ACF1F2DE18400E4F62C /* LaunchScreen.storyboard in Resources */,
 				8D0A9ACC1F2DE18400E4F62C /* Assets.xcassets in Resources */,
-				8D37EF471F3CEC4F00F49B3A /* rightmean.txt in Resources */,
 				8D0A9ACA1F2DE18400E4F62C /* Main.storyboard in Resources */,
-				8D37EF4A1F3CEC5300F49B3A /* leftmean.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,9 +200,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D37EF4B1F3CEC5600F49B3A /* facemean.txt in Resources */,
-				8D37EF491F3CEC5300F49B3A /* leftmean.txt in Resources */,
-				8D37EF481F3CEC4F00F49B3A /* rightmean.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,9 +210,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D0A9AC71F2DE18400E4F62C /* ViewController.swift in Sources */,
+				8D0A9AC71F2DE18400E4F62C /* DotViewController.swift in Sources */,
 				8D0A9AC51F2DE18400E4F62C /* AppDelegate.swift in Sources */,
-				8D11F4071F3E020A00A2574D /* TestModel.mlmodel in Sources */,
+				8DC26B0F1F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */,
+				8D28FAB71F61212D00B8818C /* Itracker.mlmodel in Sources */,
+				8D8C52641F4D518600080D77 /* EyeGazeLogic.swift in Sources */,
 				8D11F4051F3E014E00A2574D /* CameraController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,8 +224,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D37EF461F3CEB5700F49B3A /* TestLoadMeanFile.swift in Sources */,
+				8D8C52651F4D518600080D77 /* EyeGazeLogic.swift in Sources */,
 				8D0A9ADA1F2DE18400E4F62C /* CoreMLTestTests.swift in Sources */,
-				8D11F4081F3E020A00A2574D /* TestModel.mlmodel in Sources */,
+				8DC26B101F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,14 +247,6 @@
 				8D0A9AC91F2DE18400E4F62C /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		8D0A9ACD1F2DE18400E4F62C /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8D0A9ACE1F2DE18400E4F62C /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -393,6 +365,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -407,6 +380,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTest;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -422,9 +396,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTestTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTestTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CoreMLTest.app/CoreMLTest";
@@ -438,9 +414,11 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = EQHBA3445S;
 				INFOPLIST_FILE = CoreMLTestTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kmitl.CoreMLTestTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CoreMLTest.app/CoreMLTest";
