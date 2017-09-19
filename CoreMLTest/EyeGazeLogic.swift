@@ -27,15 +27,44 @@ struct PredictPoint{
     var posX: Double;
     var posY: Double;
     
-    mutating func toScreenPoint() -> String{
-        let orientation = UIDevice.current.orientation
+    func toScreenPoint() -> CGPoint{
         let dX = 18.61
         let dY = 8.03
         let dWidth = 58.5
         let dHeight = 104.05
-        return ""
+        var x = posX
+        var y = posY
+        switch UIApplication.shared.statusBarOrientation {
+        case .portrait:
+            x += dX
+            y = -y - dY
+        case .portraitUpsideDown:
+            x = x - dX + dWidth
+            y = -y + dY + dHeight
+        case .landscapeRight:
+            x = x - dY
+            y = -y - dX + dWidth
+        case .landscapeLeft:
+            x = y + dY + dHeight
+            y = -y + dX
+        case .unknown:
+            print("unknown")
+        }
+        let screenWidth: Double = 375
+        let screenHeight: Double = 667
+        if(UIApplication.shared.statusBarOrientation.isPortrait){
+            x = x * screenWidth / dWidth
+            y = y * screenHeight / dHeight
+        }
+        else if(UIApplication.shared.statusBarOrientation.isLandscape){
+            x = x * screenWidth / dHeight
+            y = y * screenHeight / dWidth
+        }
+        return CGPoint(x: x, y: y)
     }
 }
+
+
 
 @available(iOS 11.0, *)
 class EyeGazeLogic: EyeGazeLogicProtocol{

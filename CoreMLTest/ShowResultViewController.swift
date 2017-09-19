@@ -16,15 +16,14 @@ class ShowResultViewController: UIViewController{
     var predictResults: [DotPosition: [PredictPoint]] = [:]
     
     override func viewDidLoad() {
-        
         for item in predictResults{
             result.text.append("at Position(\(item.key.x), \(item.key.y)) = \n")
             for predictPoint in item.value{
                 result.text.append("""
-\(predictPoint.posX), \(predictPoint.posY) \n
+                    \(predictPoint.posX), \(predictPoint.posY) \n
+                    Calculate = (\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y))
 """)
             }
         }
-
     }
 }
