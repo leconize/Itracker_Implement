@@ -9,5 +9,7 @@ because It's use apple CoreML for running prediction model.
 ## To-Do for project
 - [x] take Image && feed to Model smootly (Currently Working on)
 - [ ] Embed WebView to App
+- [ ] Mercury
+- [x] Venus
 ## Current Status
 Working on Prediction model from [GazeCapture Model](https://github.com/CSAILVision/GazeCapture) to make this model run on Application By using new Apple CoreML convert caffe model to CoreML Model and run in the application
