@@ -10,6 +10,7 @@ import XCTest
 import CoreML
 
 class MeanLoader{
+    
     func loadMean(file filename:String) -> String?{
         do {
             if let path = Bundle.main.path(forResource: filename, ofType: "txt"){
@@ -26,7 +27,7 @@ class MeanLoader{
     func meanTextToArray(text: String) -> MLMultiArray?{
         let textArray = text.components(separatedBy: "\n")
         do{
-            let array: MLMultiArray = try MLMultiArray(shape: [1, 3, 224, 224], dataType: .double)
+            let array: MLMultiArray = try MLMultiArray(shape: [3, 224, 224], dataType: .double)
             var index = 0
             for line in 0..<textArray.count{
                 if line != 0 && line != 225 && line != 450{
