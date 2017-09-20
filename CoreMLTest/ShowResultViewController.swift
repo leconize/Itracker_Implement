@@ -21,7 +21,7 @@ class ShowResultViewController: UIViewController{
             for predictPoint in item.value{
                 result.text.append("""
                     \(predictPoint.posX), \(predictPoint.posY) \n
-                    Calculate = (\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y))
+                    Calculate = (\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y)) \n
 """)
             }
         }

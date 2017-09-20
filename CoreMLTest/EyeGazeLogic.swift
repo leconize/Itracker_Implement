@@ -32,8 +32,8 @@ struct PredictPoint{
         let dY = 8.03
         let dWidth = 58.5
         let dHeight = 104.05
-        var x = posX
-        var y = posY
+        var x = posX*10
+        var y = posY*10
         switch UIApplication.shared.statusBarOrientation {
         case .portrait:
             x += dX
@@ -50,6 +50,9 @@ struct PredictPoint{
         case .unknown:
             print("unknown")
         }
+        print(x)
+        print(y)
+        print(UIApplication.shared.statusBarOrientation.rawValue)
         let screenWidth: Double = 375
         let screenHeight: Double = 667
         if(UIApplication.shared.statusBarOrientation.isPortrait){

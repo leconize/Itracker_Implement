@@ -43,6 +43,7 @@ class DotViewController: UIViewController, CameraControllerDelegate {
     
     //MARK:- ViewAction
     override func viewDidLoad() {
+        super.viewDidLoad()
         cameraController.prepare(completionHandler: {(error) in
             if let error = error{
                 print(error)
@@ -56,8 +57,6 @@ class DotViewController: UIViewController, CameraControllerDelegate {
         if(self.generateRandomCircle){
             self.circleDrawTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.drawCircle), userInfo: nil, repeats: true)
         }
-        
-        
     }
     
     @objc func drawCircle(){
@@ -76,10 +75,11 @@ class DotViewController: UIViewController, CameraControllerDelegate {
         shapelayer.fillColor = UIColor.red.cgColor
         shapelayer.strokeColor = UIColor.red.cgColor
         shapelayer.lineWidth = 3.0
-        guard let layerCount = view.layer.sublayers?.count else {
+        guard let layerCount = self.view.layer.sublayers?.count else {
+            self.view.layer.addSublayer(shapelayer)
             return
         }
-        if(layerCount == 3){
+        if(layerCount == 1){
             self.view.layer.sublayers?.removeLast()
         }
         self.view.layer.addSublayer(shapelayer)

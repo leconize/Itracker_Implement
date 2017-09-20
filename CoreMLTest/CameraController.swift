@@ -95,7 +95,6 @@ class CameraController: NSObject{
                 throw CameraControllerError.inputsAreInvalid
             }
             self.captureSession?.startRunning()
-            
         }
         
         DispatchQueue(label: "prepare").async {
