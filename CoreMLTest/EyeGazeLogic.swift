@@ -50,9 +50,6 @@ struct PredictPoint{
         case .unknown:
             print("unknown")
         }
-        print(x)
-        print(y)
-        print(UIApplication.shared.statusBarOrientation.rawValue)
         let screenWidth: Double = 375
         let screenHeight: Double = 667
         if(UIApplication.shared.statusBarOrientation.isPortrait){

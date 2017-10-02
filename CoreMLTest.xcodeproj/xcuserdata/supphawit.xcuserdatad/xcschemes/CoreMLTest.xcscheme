@@ -38,6 +38,11 @@
                BlueprintName = "CoreMLTestTests"
                ReferencedContainer = "container:CoreMLTest.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "TestResultViewController/testConvertToCSVString()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>
