@@ -8,23 +8,9 @@
 
 import Foundation
 import UIKit
+import MessageUI
 
-struct Circle{
-    
-    let posX:Double
-    let posY:Double
-    
-    let radius: Double
-    
-    func isPointInCircle(point: CGPoint) -> Bool{
-        if(pow(Double(point.x)-posX, 2) + pow(Double(point.y)-posY, 2) < radius){
-            return true
-        }
-        return false
-    }
-    
-}
-class ShowResultViewController: UIViewController{
+class ShowResultViewController: UIViewController, MFMailComposeViewControllerDelegate{
     
     @IBOutlet weak var result: UITextView!
     
@@ -32,16 +18,36 @@ class ShowResultViewController: UIViewController{
     
     override func viewDidLoad() {
         for item in predictResults{
-            result.text.append("at Position(\(item.key.x), \(item.key.y)) = \n")
+            result.text.append("(\(item.key.x),\(item.key.y))\n")
             for predictPoint in item.value{
                 result.text.append("""
-                    \(predictPoint.posX), \(predictPoint.posY) \n
-                    Calculate = (\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y)) \n
+                    \(predictPoint.posX), \(predictPoint.posY),(\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y))\n
 """)
             }
         }
         let hitRate = calAccuracy(result: predictResults)
         print(hitRate)
+        
+    }
+    
+    func createCsvFrom(result: [DotPosition: [PredictPoint]]) -> String{
+        var stringResult: String = ""
+        for item in predictResults{
+            stringResult.append("(\(item.key.x),\(item.key.y))\n")
+            for predictPoint in item.value{
+                stringResult.append("""
+                    \(predictPoint.posX), \(predictPoint.posY),(\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y))\n
+                    """)
+            }
+        }
+        return stringResult
+    }
+    
+    func sendEmail() -> Void {
+        let mailMVC = MFMailComposeViewController()
+        mailMVC.mailComposeDelegate = self
+        mailMVC.setToRecipients(["g.supavit@gmail.com"])
+        mailMVC.setSubject("send position")
         
     }
     
@@ -66,5 +72,21 @@ class ShowResultViewController: UIViewController{
         return Double(hitRate / total)
     }
     
+    
+}
+
+struct Circle{
+    
+    let posX:Double
+    let posY:Double
+    
+    let radius: Double
+    
+    func isPointInCircle(point: CGPoint) -> Bool{
+        if(pow(Double(point.x)-posX, 2) + pow(Double(point.y)-posY, 2) < radius){
+            return true
+        }
+        return false
+    }
     
 }
