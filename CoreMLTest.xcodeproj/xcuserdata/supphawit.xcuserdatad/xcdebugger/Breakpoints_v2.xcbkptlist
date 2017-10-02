@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CoreMLTest/DotViewController.swift"
-            timestampString = "527593232.863254"
+            timestampString = "528282745.176446"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "drawCircle()"
             landmarkType = "7">
          </BreakpointContent>

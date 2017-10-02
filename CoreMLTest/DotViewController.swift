@@ -30,7 +30,8 @@ class DotViewController: UIViewController, CameraControllerDelegate {
     //MARK:- Propreties
     let generateRandomCircle = true
     let cameraController = CameraController()
-    let circleRadius: CGFloat = 20
+    static let circleRadius: CGFloat = 20
+    
     
     var dotCount = 0
     var dotPosition: DotPosition = DotPosition(x: 0, y: 0)
@@ -55,18 +56,18 @@ class DotViewController: UIViewController, CameraControllerDelegate {
             self.cameraController.delegate = self
         }
         if(self.generateRandomCircle){
-            self.circleDrawTimer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.drawCircle), userInfo: nil, repeats: true)
+            self.circleDrawTimer = Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.drawCircle), userInfo: nil, repeats: true)
         }
     }
     
     @objc func drawCircle(){
         let screenRect = UIScreen.main.bounds
-        self.dotPosition.x = arc4random_uniform(UInt32(screenRect.width-circleRadius)) + UInt32(circleRadius)
-        self.dotPosition.y = arc4random_uniform(UInt32(screenRect.height-circleRadius)) + UInt32(circleRadius)
+        self.dotPosition.x = arc4random_uniform(UInt32(screenRect.width-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
+        self.dotPosition.y = arc4random_uniform(UInt32(screenRect.height-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
         let circlePath = UIBezierPath(
             arcCenter: CGPoint(x: Double(self.dotPosition.x)
             , y: Double(self.dotPosition.y))
-            , radius: circleRadius
+            , radius: DotViewController.circleRadius
             , startAngle: CGFloat(0)
             , endAngle: CGFloat(Double.pi*2)
             , clockwise: true)
@@ -84,7 +85,7 @@ class DotViewController: UIViewController, CameraControllerDelegate {
         }
         self.view.layer.addSublayer(shapelayer)
         dotCount += 1
-        if(dotCount > 16){
+        if(dotCount > 9){
             self.performSegue(withIdentifier: "showPredictResultSegue", sender: nil)
         }
     }
