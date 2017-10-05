@@ -22,6 +22,9 @@ class ShowResultViewController: UIViewController, MFMailComposeViewControllerDel
         print(hitRate)
         
     }
+    @IBAction func sendEmailBtnAction() {
+        self.sendEmail()
+    }
     
     func createCsvFrom(result: [DotPosition: [PredictPoint]]) -> String{
         var stringResult: String = ""
@@ -32,6 +35,7 @@ class ShowResultViewController: UIViewController, MFMailComposeViewControllerDel
                 stringResult.append("\(predictPoint.posX), \(predictPoint.posY),\(predictPoint.toScreenPoint().x),\(predictPoint.toScreenPoint().y)\n")
             }
         }
+        print(stringResult)
         return stringResult
     }
     
@@ -40,7 +44,8 @@ class ShowResultViewController: UIViewController, MFMailComposeViewControllerDel
         mailMVC.mailComposeDelegate = self
         mailMVC.setToRecipients(["g.supavit@gmail.com"])
         mailMVC.setSubject("send position")
-        
+        mailMVC.setMessageBody(self.createCsvFrom(result: predictResults), isHTML: false)
+        self.present(mailMVC, animated: true, completion: nil)
     }
     
     func calAccuracy(result:[DotPosition: [PredictPoint]]) -> Double{
