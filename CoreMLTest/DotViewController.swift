@@ -33,9 +33,11 @@ class DotViewController: UIViewController, CameraControllerDelegate {
     static let circleRadius: CGFloat = 20
     
     
-    var dotCount = 0
+    var currentDotPosition: Int = 0
+    var isSpawnRandom: Bool = false
+    var dotCount: UInt = 0
     var dotPosition: DotPosition = DotPosition(x: 0, y: 0)
-    var isProcessing = false
+    var isProcessing: Bool = false
     var gazeLogic: EyeGazeLogic?
     var result: [DotPosition: [PredictPoint]] = [:]
     lazy var circleDrawTimer: Timer = Timer.init()
@@ -43,6 +45,11 @@ class DotViewController: UIViewController, CameraControllerDelegate {
     
     
     //MARK:- ViewAction
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.cameraController.delegate = nil
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         cameraController.prepare(completionHandler: {(error) in
@@ -62,8 +69,16 @@ class DotViewController: UIViewController, CameraControllerDelegate {
     
     @objc func drawCircle(){
         let screenRect = UIScreen.main.bounds
-        self.dotPosition.x = arc4random_uniform(UInt32(screenRect.width-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
-        self.dotPosition.y = arc4random_uniform(UInt32(screenRect.height-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
+        if(isSpawnRandom){
+            self.dotPosition.x = arc4random_uniform(UInt32(screenRect.width-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
+            self.dotPosition.y = arc4random_uniform(UInt32(screenRect.height-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
+        }
+        else{
+            print(self.dotCount)
+            print(" \(self.dotCount / 3 + 1) \(self.dotCount % 3 + 1)")
+            self.dotPosition.x = UInt32(UIScreen.main.bounds.width / 4 * CGFloat(self.dotCount / 3 + 1) )
+            self.dotPosition.y = UInt32(UIScreen.main.bounds.height / 4 * CGFloat(self.dotCount % 3 + 1))
+        }
         let circlePath = UIBezierPath(
             arcCenter: CGPoint(x: Double(self.dotPosition.x)
             , y: Double(self.dotPosition.y))
@@ -86,6 +101,7 @@ class DotViewController: UIViewController, CameraControllerDelegate {
         self.view.layer.addSublayer(shapelayer)
         dotCount += 1
         if(dotCount > 9){
+            self.circleDrawTimer.invalidate()
             self.performSegue(withIdentifier: "showPredictResultSegue", sender: nil)
         }
     }

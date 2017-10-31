@@ -31,7 +31,6 @@ class TestModelPredictValue: XCTestCase {
         guard let faceGridArray = try? MLMultiArray(shape: [625,1, 1], dataType: .double) else{
             return nil
         }
-//        abelFaceY = frameH-labelFaceY-labelFaceH
         
         let calY = imageBound.height - faceBound.origin.y - faceBound.height
         
@@ -69,17 +68,17 @@ class TestModelPredictValue: XCTestCase {
         let leftEyeImage = CIImage(image: UIImage(named: "leftEyeImage")!)
         let rightEyeImage = CIImage(image: UIImage(named: "rightEyeImage")!)
         
-        guard let facePixel = eyeGazeLogic.toCreataImage(image: faceImage!) else { return }
-        guard let leftPixel = eyeGazeLogic.toCreataImage(image: leftEyeImage!) else { return }
-        guard let rightPixel = eyeGazeLogic.toCreataImage(image: rightEyeImage!) else { return }
-        
+        guard let facePixel = eyeGazeLogic.toPixelBuffer(image: faceImage!) else { return }
+        guard let leftPixel = eyeGazeLogic.toPixelBuffer(image: leftEyeImage!) else { return }
+        guard let rightPixel = eyeGazeLogic.toPixelBuffer(image: rightEyeImage!) else { return }
+
         let imageBound = CGRect(x: 0, y: 0, width: 720, height: 1280)
         let gridSize: CGFloat = 25
 //        100, 127.5, 450, 450
         let faceBound: CGRect = CGRect(x: 100, y: 127.5, width: 450, height: 450)
         let faceGrid = calculateFaceGrid(imageBound: imageBound, gridSize: gridSize, faceBound: faceBound)
-        for i in 0..<25{
-            for j in 0..<25{
+        for i in 0..<25 {
+            for j in 0..<25 {
                 print(faceGrid![i*25+j], separator: " ", terminator: " ")
             }
             print(" ")

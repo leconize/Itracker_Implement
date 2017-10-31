@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import CoreImage
 import CoreML
+import Vision
 
 protocol EyeGazeLogicProtocol {
     func detectEye(on image:CIImage) throws -> PredictPoint?
@@ -71,7 +72,6 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Propreties
     let itrackerModel:Itracker = Itracker()
-    let context: CIContext = CIContext()
     
     //MARK:- Protocol Method
     func detectEye(on image: CIImage) throws -> PredictPoint? {
@@ -95,20 +95,22 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                     throw PreprocessError.failToCreateFaceGrid
                 }
                 do{
-                    guard let facePixelBuffer = toCreataImage(image: faceScaleImage) else {
+                    guard let facePixelBuffer = toPixelBuffer(image: faceScaleImage) else {
                         throw PreprocessError.faceImageError
                     }
-                    guard let leftEyePixelBuffer = toCreataImage(image: leftEyeImage) else {
+                    guard let leftEyePixelBuffer = toPixelBuffer(image: leftEyeImage) else {
                         throw PreprocessError.leftEyeError
                     }
-                    guard let rightEyePixelBuffer = toCreataImage(image: rightEyeImage) else {
+                    guard let rightEyePixelBuffer = toPixelBuffer(image: rightEyeImage) else {
                         throw PreprocessError.rightEyeError
                     }
                     return try predict(faceGrid: facegrid, imageFace: facePixelBuffer, imageLeft: leftEyePixelBuffer, imageRight: rightEyePixelBuffer)
                 }
                 catch{
                     return nil
-                }
+                } 
+
+                
             }
         }
         return nil
@@ -132,12 +134,40 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     }
     
     //MARK:- reposition
-    func toCreataImage(image: CIImage) -> CVPixelBuffer? {
+    func toPixelBuffer(image: CIImage) -> CVPixelBuffer? {
         var pixelBuffer: CVPixelBuffer? = nil
         let status = CVPixelBufferCreate(kCFAllocatorDefault, 224, 224, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
-        if (status == kCVReturnSuccess) {
-            let context = CIContext()
-            context.render(image, to: pixelBuffer!, bounds: CGRect.init(x: 0, y: 0, width: 224, height: 224), colorSpace: CGColorSpaceCreateDeviceRGB())
+        if (status == kCVReturnSuccess){
+            guard let _pixelBuffer = pixelBuffer else { fatalError() }
+            CVPixelBufferLockBaseAddress(_pixelBuffer, CVPixelBufferLockFlags.init(rawValue: 0))
+            let ciContext = CIContext()
+            ciContext.render(image, to: _pixelBuffer, bounds: CGRect.init(x: 0, y: 0, width: 224, height: 224), colorSpace: CGColorSpaceCreateDeviceRGB())
+//            ciContext.render(image, to: pixelBuffer!)
+//            let int32Buffer = unsafeBitCast(CVPixelBufferGetBaseAddress(pixelBuffer!), to: UnsafeMutablePointer<UInt32>.self)
+//            let int32PerRow = CVPixelBufferGetBytesPerRow(pixelBuffer!)
+//            // Get BGRA value for pixel (43, 17)
+//            let height = CVPixelBufferGetHeight(pixelBuffer!)
+//            let width = CVPixelBufferGetWidth(pixelBuffer!)
+//            for row in 0..<height {
+//                for column in 0..<width {
+//                 let luma = int32Buffer[row * int32PerRow + column]
+//
+//
+//                    var result:[UInt8] = Array()
+//                    var _number:UInt32 = luma
+//                    let mask8Bit:UInt32 = 0xFF
+//
+//
+//                    for _ in (0..<MemoryLayout<UInt32>.alignment).reversed() {
+//                        result.insert(UInt8(_number & mask8Bit), at: 0)
+//                        _number >>= 8
+//                    }
+//
+//                    print(result)
+//                }
+//            }
+            
+            CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.init(rawValue: 0))
             return pixelBuffer!
         }
         else{
@@ -148,8 +178,8 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Preprocess Method
     func getEyeImageRect(posX: CGFloat, posY: CGFloat, size: CGFloat) -> CGRect{
-        let reg = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
-        return reg
+        let eyeRect = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
+        return eyeRect
     }
     
     
