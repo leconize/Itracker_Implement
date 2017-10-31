@@ -21,6 +21,8 @@
 		8DB070CD1F726D94009C879F /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4031F3E013900A2574D /* CameraController.swift */; };
 		8DB070CE1F726D9B009C879F /* DotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A9AC61F2DE18400E4F62C /* DotViewController.swift */; };
 		8DB070CF1F726DB8009C879F /* Itracker.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D28FAB61F61212D00B8818C /* Itracker.mlmodel */; };
+		8DBFDED51F8FB66900775274 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D0A9ACB1F2DE18400E4F62C /* Assets.xcassets */; };
+		8DBFDED71F8FB67E00775274 /* TestModelPredictValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBFDED61F8FB67E00775274 /* TestModelPredictValue.swift */; };
 		8DC26B0F1F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */; };
 		8DC26B101F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */; };
 /* End PBXBuildFile section */
@@ -50,6 +52,7 @@
 		8D33835D1F8237DF00AC8DE5 /* TestResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestResultViewController.swift; sourceTree = "<group>"; };
 		8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeGazeLogic.swift; sourceTree = "<group>"; };
 		8DB070CB1F726CDE009C879F /* TestPredictPointConvert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPredictPointConvert.swift; sourceTree = "<group>"; };
+		8DBFDED61F8FB67E00775274 /* TestModelPredictValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestModelPredictValue.swift; sourceTree = "<group>"; };
 		8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowResultViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -112,6 +115,7 @@
 				8D0A9ADB1F2DE18400E4F62C /* Info.plist */,
 				8DB070CB1F726CDE009C879F /* TestPredictPointConvert.swift */,
 				8D33835D1F8237DF00AC8DE5 /* TestResultViewController.swift */,
+				8DBFDED61F8FB67E00775274 /* TestModelPredictValue.swift */,
 			);
 			path = CoreMLTestTests;
 			sourceTree = "<group>";
@@ -206,6 +210,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8DBFDED51F8FB66900775274 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,6 +237,7 @@
 				8DB070CE1F726D9B009C879F /* DotViewController.swift in Sources */,
 				8DB070CD1F726D94009C879F /* CameraController.swift in Sources */,
 				8DB070CC1F726CDE009C879F /* TestPredictPointConvert.swift in Sources */,
+				8DBFDED71F8FB67E00775274 /* TestModelPredictValue.swift in Sources */,
 				8D8C52651F4D518600080D77 /* EyeGazeLogic.swift in Sources */,
 				8DB070CF1F726DB8009C879F /* Itracker.mlmodel in Sources */,
 				8D0A9ADA1F2DE18400E4F62C /* CoreMLTestTests.swift in Sources */,

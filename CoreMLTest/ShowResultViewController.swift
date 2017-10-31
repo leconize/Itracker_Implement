@@ -10,37 +10,20 @@ import Foundation
 import UIKit
 import MessageUI
 
-class ShowResultViewController: UIViewController, MFMailComposeViewControllerDelegate{
+class ShowResultViewController: UIViewController{
     
+    // MARK:- Propreties
     @IBOutlet weak var result: UITextView!
     
     var predictResults: [DotPosition: [PredictPoint]] = [:]
     
+    // MARK:- View Action
     override func viewDidLoad() {
-        for item in predictResults{
-            result.text.append("(\(item.key.x),\(item.key.y))\n")
-            for predictPoint in item.value{
-                result.text.append("""
-                    \(predictPoint.posX), \(predictPoint.posY),(\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y))\n
-""")
-            }
-        }
-        let hitRate = calAccuracy(result: predictResults)
-        print(hitRate)
-        
+        result.text = createCsvFrom(result: predictResults)
     }
     
-    func createCsvFrom(result: [DotPosition: [PredictPoint]]) -> String{
-        var stringResult: String = ""
-        for item in predictResults{
-            stringResult.append("(\(item.key.x),\(item.key.y))\n")
-            for predictPoint in item.value{
-                stringResult.append("""
-                    \(predictPoint.posX), \(predictPoint.posY),(\(predictPoint.toScreenPoint().x), \(predictPoint.toScreenPoint().y))\n
-                    """)
-            }
-        }
-        return stringResult
+    @IBAction func sendEmailBtnAction() {
+        self.sendEmail()
     }
     
     func sendEmail() -> Void {
@@ -48,31 +31,30 @@ class ShowResultViewController: UIViewController, MFMailComposeViewControllerDel
         mailMVC.mailComposeDelegate = self
         mailMVC.setToRecipients(["g.supavit@gmail.com"])
         mailMVC.setSubject("send position")
-        
+        mailMVC.setMessageBody(self.createCsvFrom(result: predictResults), isHTML: false)
+        self.present(mailMVC, animated: true, completion: nil)
     }
     
-    func calAccuracy(result:[DotPosition: [PredictPoint]]) -> Double{
-        var hitRate = 0
-        var total = 0
-        for predict in result{
-            let circle = Circle(posX: Double(predict.key.x)
-                , posY: Double(predict.key.y)
-                , radius: Double(DotViewController.circleRadius))
-            
-            for predictResult in predict.value{
-                total += 1
-                if(circle.isPointInCircle(point: CGPoint(x: predictResult.posX, y: predictResult.posX))){
-                    hitRate += 1
-                }
-                else{
-                    
-                }
+    // MARK:- Internal Logic
+    func createCsvFrom(result: [DotPosition: [PredictPoint]]) -> String {
+        var stringResult: String = ""
+        print()
+        for item in result{
+            stringResult.append("\(item.key.x),\(item.key.y)\n")
+            for predictPoint in item.value{
+                stringResult.append("\(predictPoint.posX), \(predictPoint.posY),\(predictPoint.toScreenPoint().x),\(predictPoint.toScreenPoint().y)\n")
             }
         }
-        return Double(hitRate / total)
+        print(stringResult)
+        return stringResult
     }
     
-    
+}
+
+extension ShowResultViewController: MFMailComposeViewControllerDelegate{
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
+    }
 }
 
 struct Circle{

@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import CoreImage
 import CoreML
+import Vision
 
 protocol EyeGazeLogicProtocol {
     func detectEye(on image:CIImage) throws -> PredictPoint?
@@ -50,9 +51,6 @@ struct PredictPoint{
         case .unknown:
             print("unknown")
         }
-        print(x)
-        print(y)
-        print(UIApplication.shared.statusBarOrientation.rawValue)
         let screenWidth: Double = 375
         let screenHeight: Double = 667
         if(UIApplication.shared.statusBarOrientation.isPortrait){
@@ -74,11 +72,9 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Propreties
     let itrackerModel:Itracker = Itracker()
-    var tempImage: CIImage?
-    let context: CIContext = CIContext()
     
     //MARK:- Protocol Method
-    func detectEye(on image: CIImage) throws -> PredictPoint?{
+    func detectEye(on image: CIImage) throws -> PredictPoint? {
         let accuracy = [CIDetectorAccuracy: CIDetectorAccuracyLow]
         let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: accuracy)
         let faces = faceDetector?.features(in: image)
@@ -99,47 +95,79 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                     throw PreprocessError.failToCreateFaceGrid
                 }
                 do{
-                    guard let facePixelBuffer = toCreataImage(image: faceScaleImage) else {
-                        print("face")
+                    guard let facePixelBuffer = toPixelBuffer(image: faceScaleImage) else {
                         throw PreprocessError.faceImageError
                     }
-                    guard let leftEyePixelBuffer = toCreataImage(image: leftEyeImage) else {
-                        print("left")
+                    guard let leftEyePixelBuffer = toPixelBuffer(image: leftEyeImage) else {
                         throw PreprocessError.leftEyeError
                     }
-                    guard let rightEyePixelBuffer = toCreataImage(image: rightEyeImage) else {
+                    guard let rightEyePixelBuffer = toPixelBuffer(image: rightEyeImage) else {
                         throw PreprocessError.rightEyeError
                     }
-                    let result = try itrackerModel.prediction(facegrid: facegrid
-                        , image_face: facePixelBuffer
-                        , image_left: leftEyePixelBuffer
-                        , image_right: rightEyePixelBuffer)
-                    print("result = ")
-                    for index in 0...5{
-                        print(result.fc3[index])
-                    }
-                    let predictPoint = PredictPoint(
-                        posX: Double(truncating: result.fc3[0])
-                        , posY: Double(truncating: result.fc3[1]))
-                    return predictPoint
-                    
+                    return try predict(faceGrid: facegrid, imageFace: facePixelBuffer, imageLeft: leftEyePixelBuffer, imageRight: rightEyePixelBuffer)
                 }
                 catch{
-                    print(error)
                     return nil
-                }
+                } 
+
+                
             }
         }
         return nil
     }
     
-    //MARK:- repos
-    func toCreataImage(image: CIImage) -> CVPixelBuffer?{
+    func predict(faceGrid: MLMultiArray
+        , imageFace:CVPixelBuffer
+        , imageLeft:CVPixelBuffer
+        , imageRight:CVPixelBuffer) throws -> PredictPoint {
+            let result = try itrackerModel.prediction(facegrid: faceGrid
+                , image_face: imageFace
+                , image_left: imageLeft
+                , image_right: imageRight)
+            for index in 0...5{
+                print(result.fc3[index])
+            }
+            let predictPoint = PredictPoint(
+                posX: Double(truncating: result.fc3[0])
+                , posY: Double(truncating: result.fc3[1]))
+            return predictPoint
+    }
+    
+    //MARK:- reposition
+    func toPixelBuffer(image: CIImage) -> CVPixelBuffer? {
         var pixelBuffer: CVPixelBuffer? = nil
         let status = CVPixelBufferCreate(kCFAllocatorDefault, 224, 224, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
-        if (status == kCVReturnSuccess) {
-            let context = CIContext()
-            context.render(image, to: pixelBuffer!, bounds: CGRect.init(x: 0, y: 0, width: 224, height: 224), colorSpace: CGColorSpaceCreateDeviceRGB())
+        if (status == kCVReturnSuccess){
+            guard let _pixelBuffer = pixelBuffer else { fatalError() }
+            CVPixelBufferLockBaseAddress(_pixelBuffer, CVPixelBufferLockFlags.init(rawValue: 0))
+            let ciContext = CIContext()
+            ciContext.render(image, to: _pixelBuffer, bounds: CGRect.init(x: 0, y: 0, width: 224, height: 224), colorSpace: CGColorSpaceCreateDeviceRGB())
+//            ciContext.render(image, to: pixelBuffer!)
+//            let int32Buffer = unsafeBitCast(CVPixelBufferGetBaseAddress(pixelBuffer!), to: UnsafeMutablePointer<UInt32>.self)
+//            let int32PerRow = CVPixelBufferGetBytesPerRow(pixelBuffer!)
+//            // Get BGRA value for pixel (43, 17)
+//            let height = CVPixelBufferGetHeight(pixelBuffer!)
+//            let width = CVPixelBufferGetWidth(pixelBuffer!)
+//            for row in 0..<height {
+//                for column in 0..<width {
+//                 let luma = int32Buffer[row * int32PerRow + column]
+//
+//
+//                    var result:[UInt8] = Array()
+//                    var _number:UInt32 = luma
+//                    let mask8Bit:UInt32 = 0xFF
+//
+//
+//                    for _ in (0..<MemoryLayout<UInt32>.alignment).reversed() {
+//                        result.insert(UInt8(_number & mask8Bit), at: 0)
+//                        _number >>= 8
+//                    }
+//
+//                    print(result)
+//                }
+//            }
+            
+            CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.init(rawValue: 0))
             return pixelBuffer!
         }
         else{
@@ -150,23 +178,27 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Preprocess Method
     func getEyeImageRect(posX: CGFloat, posY: CGFloat, size: CGFloat) -> CGRect{
-        let reg = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
-        return reg
+        let eyeRect = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
+        return eyeRect
     }
     
-    func calculateFaceGrid(imageBound: CGRect, gridSize:CGFloat, faceBound:CGRect) -> MLMultiArray?{
-        let scaleX = imageBound.width / gridSize
-        let scaleY = imageBound.height / gridSize
+    
+    func calculateFaceGrid(imageBound: CGRect, gridSize:CGFloat, faceBound:CGRect) -> MLMultiArray? {
         
-        guard let faceGridArray = try? MLMultiArray(shape: [625,1, 1], dataType: .double) else{
+        let scaleX = gridSize / imageBound.width
+        let scaleY = gridSize / imageBound.height
+        
+        guard let faceGridArray = try? MLMultiArray(shape: [625,1, 1], dataType: .double) else {
             return nil
         }
         
-        var xLow = faceBound.origin.x * scaleX
-        var yLow = faceBound.origin.y * scaleY
+        let calY = imageBound.height - faceBound.origin.y - faceBound.height
         
-        let width = faceBound.size.width * scaleX
-        let height = faceBound.size.height * scaleY
+        var xLow = (faceBound.origin.x * scaleX).rounded() + 1
+        var yLow = (calY * scaleY).rounded() + 1
+        
+        let width = (faceBound.size.width * scaleX).rounded()
+        let height = (faceBound.size.height * scaleY).rounded()
         
         var xHi = xLow + width - 1
         var yHi = yLow + height - 1
@@ -177,9 +209,9 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
         yHi = min(gridSize, max(1, yHi))
         
         for index in 0..<(Int(gridSize*gridSize)){
-            let row = round( CGFloat(index) / gridSize)
+            let row = floor(CGFloat(index) / gridSize)
             let column = CGFloat(index%Int(gridSize))
-            if(row <= xHi && row >= xLow && column <= yHi && column >= yLow){
+            if(row <= yHi - 1 && row >= yLow - 1 && column <= xHi - 1 && column >= xLow - 1){
                 faceGridArray[index] = 1
             }
             else{

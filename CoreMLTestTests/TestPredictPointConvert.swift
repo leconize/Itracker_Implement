@@ -21,11 +21,20 @@ class TestPredictPointConvert: XCTestCase {
     }
     
     func testConvertToScreenPoint() {
-        let point = PredictPoint(posX: 1.26, posY: -7.76).toScreenPoint()
+//        let point = PredictPoint(posX: 1.26, posY: -7.76).toScreenPoint()
+//        -3.27383208  0.99026316
+//        -1.73477387 -2.54712701
+//        3.004611253738403
+//        -9.196148872375488
+        let point = PredictPoint(posX: 3.004611253738403, posY: 9.196148872375488).toScreenPoint()
+
         let forthPlacesDecimalX = String.init(format: "%.4f", point.x)
         let forthPlacesDecimalY = String.init(format: "%.4f", point.y)
         XCTAssertEqual(forthPlacesDecimalX, "\(200.0641)")
         XCTAssertEqual(forthPlacesDecimalY, "\(445.9701)")
+        
+        
+        
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
