@@ -55,14 +55,17 @@ with open('mean_images/mean_face_224.binaryproto') as f:
 face_mean_array = np.asarray(face_mean_blob.data, dtype=np.float32).reshape(
     (face_mean_blob.channels, face_mean_blob.height, face_mean_blob.width))
 
+
+
 right_mean_blob = caffe_pb2.BlobProto()
-with open('mean_images/mean_left_224_new.binaryproto') as f:
+with open('mean_images/mean_right_224.binaryproto') as f:
     right_mean_blob.ParseFromString(f.read())
 left_mean_array = np.asarray(right_mean_blob.data, dtype=np.float32).reshape(
     (right_mean_blob.channels, right_mean_blob.height, right_mean_blob.width))
 
 left_mean_blob = caffe_pb2.BlobProto()
-with open('mean_images/mean_right_224.binaryproto') as f:
+
+with open('mean_images/mean_left_224_new.binaryproto') as f:
     left_mean_blob.ParseFromString(f.read())
 right_mean_array = np.asarray(left_mean_blob.data, dtype=np.float32).reshape(
     (left_mean_blob.channels, left_mean_blob.height, left_mean_blob.width))
@@ -89,8 +92,8 @@ image_tranformer.set_channel_swap('image_left', (2,1,0))
 
 image_tranformer.set_mean('image_right', right_mean_array)
 image_tranformer.set_transpose('image_right', (2, 0, 1))
-image_tranformer.set_raw_scale('image_left', 255)
-image_tranformer.set_channel_swap('image_left', (2,1,0))
+image_tranformer.set_raw_scale('image_right', 255)
+image_tranformer.set_channel_swap('image_right', (2,1,0))
 
 faceImage = caffe.io.load_image('faceScaleImage.png')
 leftImage = caffe.io.load_image('leftEyeImage.png')
@@ -100,6 +103,8 @@ net.blobs['image_face'].data[...] = image_tranformer.preprocess('image_face', fa
 net.blobs['image_left'].data[...] = image_tranformer.preprocess('image_left', leftImage)
 net.blobs['image_right'].data[...] = image_tranformer.preprocess('image_right', rightImage)
 
+print(net.blobs['image_face'].data.shape)
+print(net.blobs['image_face'].data[...])
 # mock_face = np.ones((1, 3, 224, 224))
 # mock_left = np.ones((1, 3, 224, 224))
 # mock_right = np.ones((1, 3, 224, 224))
@@ -115,6 +120,8 @@ net.blobs['image_right'].data[...] = image_tranformer.preprocess('image_right', 
 # net.blobs['image_right'].data[...] = mock_right
 
 net.blobs['facegrid'].data[...] = calculate_face_grid(720, 1280.0, 25.0, 25.0, 100, 127.5, 450, 450, 0).T.reshape((1, 625, 1, 1))
+
+print(face_mean_array)
 
 net.forward()
 print(net)
