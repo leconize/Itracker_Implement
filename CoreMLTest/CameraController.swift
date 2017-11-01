@@ -94,7 +94,9 @@ class CameraController: NSObject{
             else{
                 throw CameraControllerError.inputsAreInvalid
             }
-            self.captureSession?.startRunning()
+            var movieFileOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
+            
+            captureSession.startRunning()
         }
         
         DispatchQueue(label: "prepare").async {
@@ -117,18 +119,23 @@ class CameraController: NSObject{
             }
         }
     }
+    
+    func stopCaptureCamera(){
+        self.captureSession?.stopRunning()
+    }
 }
 
 @available(iOS 11.0, *)
 extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate{
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard let  _delegate = self.delegate else { return }
         if(!isProcessing){
             DispatchQueue.global(qos: .background).async {
                 let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
                 var image = CIImage.init(cvImageBuffer: imageBuffer!)
                 image = image.oriented(CGImagePropertyOrientation(rawValue: 5)!)
-                self.delegate?.didCaptureVideoFrame(image: image)
+                _delegate.didCaptureVideoFrame(image: image)
             }
         }
     }
