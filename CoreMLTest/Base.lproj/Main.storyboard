@@ -116,6 +116,7 @@
                     </view>
                     <connections>
                         <outlet property="result" destination="KcM-V8-93S" id="rMx-cD-n3Y"/>
+                        <segue destination="aly-q4-955" kind="show" id="wVC-Ty-heA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OPb-vX-Jvv" userLabel="First Responder" sceneMemberID="firstResponder"/>

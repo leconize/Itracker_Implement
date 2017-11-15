@@ -94,7 +94,7 @@ class CameraController: NSObject{
             else{
                 throw CameraControllerError.inputsAreInvalid
             }
-            var movieFileOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
+//            var movieFileOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
             
             captureSession.startRunning()
         }
