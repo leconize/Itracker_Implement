@@ -94,6 +94,9 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                 guard let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds) else {
                     throw PreprocessError.failToCreateFaceGrid
                 }
+                print(faceScaleImage.extent)
+                print(rightEyeImage.extent)
+                print(leftEyeImage.extent)
                 do{
                     guard let facePixelBuffer = toPixelBuffer(image: faceScaleImage) else {
                         throw PreprocessError.faceImageError
@@ -108,9 +111,7 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                 }
                 catch{
                     return nil
-                } 
-
-                
+                }
             }
         }
         return nil
@@ -133,7 +134,7 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
             return predictPoint
     }
     
-    //MARK:- reposition
+    //MARK:- convert Method
     func toPixelBuffer(image: CIImage) -> CVPixelBuffer? {
         var pixelBuffer: CVPixelBuffer? = nil
         let status = CVPixelBufferCreate(kCFAllocatorDefault, 224, 224, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
@@ -141,31 +142,18 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
             guard let _pixelBuffer = pixelBuffer else { fatalError() }
             CVPixelBufferLockBaseAddress(_pixelBuffer, CVPixelBufferLockFlags.init(rawValue: 0))
             let ciContext = CIContext()
-            ciContext.render(image, to: _pixelBuffer, bounds: CGRect.init(x: 0, y: 0, width: 224, height: 224), colorSpace: CGColorSpaceCreateDeviceRGB())
-//            ciContext.render(image, to: pixelBuffer!)
-//            let int32Buffer = unsafeBitCast(CVPixelBufferGetBaseAddress(pixelBuffer!), to: UnsafeMutablePointer<UInt32>.self)
-//            let int32PerRow = CVPixelBufferGetBytesPerRow(pixelBuffer!)
-//            // Get BGRA value for pixel (43, 17)
-//            let height = CVPixelBufferGetHeight(pixelBuffer!)
-//            let width = CVPixelBufferGetWidth(pixelBuffer!)
-//            for row in 0..<height {
-//                for column in 0..<width {
-//                 let luma = int32Buffer[row * int32PerRow + column]
-//
-//
-//                    var result:[UInt8] = Array()
-//                    var _number:UInt32 = luma
-//                    let mask8Bit:UInt32 = 0xFF
-//
-//
-//                    for _ in (0..<MemoryLayout<UInt32>.alignment).reversed() {
-//                        result.insert(UInt8(_number & mask8Bit), at: 0)
-//                        _number >>= 8
-//                    }
-//
-//                    print(result)
-//                }
-//            }
+//            ciContext.render(image
+//                , to: _pixelBuffer
+//                , bounds: CGRect.init(x: image.extent.origin.x
+//                , y: image.extent.origin.y, width: 224, height: 224)
+//                , colorSpace: CGColorSpaceCreateDeviceRGB())
+            let cgImage = ciContext.createCGImage(image, from: image.extent)
+            let data = CVPixelBufferGetBaseAddress(pixelBuffer!)
+            let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+            let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue)
+            let context = CGContext(data: data, width: Int(224), height: Int(224), bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer!), space: rgbColorSpace, bitmapInfo: bitmapInfo.rawValue)
+            
+            context?.draw(cgImage!, in: CGRect(x: 0, y: 0, width: 224, height: 224))
             
             CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.init(rawValue: 0))
             return pixelBuffer!

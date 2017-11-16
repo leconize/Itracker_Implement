@@ -25,7 +25,7 @@ struct DotPosition: Hashable{
 }
 
 @available(iOS 11.0, *)
-class DotViewController: UIViewController, CameraControllerDelegate {
+class DotViewController: UIViewController {
     
     //MARK:- Propreties
     let generateRandomCircle = true
@@ -114,6 +114,18 @@ class DotViewController: UIViewController, CameraControllerDelegate {
         }
     }
     
+    
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+
+}
+
+extension DotViewController: CameraControllerDelegate{
+    
     //MARK:- DelegateMethod
     func didCaptureVideoFrame(image: CIImage) {
         if(!isProcessing){
@@ -139,12 +151,4 @@ class DotViewController: UIViewController, CameraControllerDelegate {
         }
     }
     
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
-
