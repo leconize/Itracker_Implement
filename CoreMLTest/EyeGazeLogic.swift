@@ -152,8 +152,8 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     }
     
     func calculateFaceGrid(imageBound: CGRect, gridSize:CGFloat, faceBound:CGRect) -> MLMultiArray?{
-        let scaleX = imageBound.width / gridSize
-        let scaleY = imageBound.height / gridSize
+        let scaleX = gridSize / imageBound.width
+        let scaleY = gridSize / imageBound.height
         
         guard let faceGridArray = try? MLMultiArray(shape: [625,1, 1], dataType: .double) else{
             return nil
@@ -174,7 +174,7 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
         yHi = min(gridSize, max(1, yHi))
         
         for index in 0..<(Int(gridSize*gridSize)){
-            let row = round( CGFloat(index) / gridSize)
+            let row = CGFloat(Int( CGFloat(index) / gridSize))
             let column = CGFloat(index%Int(gridSize))
             if(row <= xHi && row >= xLow && column <= yHi && column >= yLow){
                 faceGridArray[index] = 1
