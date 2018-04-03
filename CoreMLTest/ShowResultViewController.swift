@@ -45,7 +45,6 @@ class ShowResultViewController: UIViewController{
                 stringResult.append("\(predictPoint.posX), \(predictPoint.posY),\(predictPoint.toScreenPoint().x),\(predictPoint.toScreenPoint().y)\n")
             }
         }
-        print(stringResult)
         return stringResult
     }
     

@@ -63,6 +63,67 @@ struct PredictPoint{
         }
         return CGPoint(x: x, y: y)
     }
+    
+    func convertCoords(deviceName: String, labelOrientation: Int, labelActiveScreenW: Int, labelActiveScreenH: Int, useCM: Bool) -> CGPoint {
+        
+        // First, convert input to millimeters to be compatible with AppleDeviceData.mat
+        var xOut:Float = Float(self.posX * 10)
+        var yOut:Float = Float(self.posY * 10)
+        let deviceNames = ["iPhone 6s Plus", "iPhone 6s", "iPhone 6 Plus", "iPhone 6", "iPhone 5s", "iPhone 5c", "iPhone 5", "iPhone 4s", "iPad Mini", "iPad Air 2", "iPad Air", "iPad 4", "iPad 3", "iPad 2"]
+        
+        let deviceCameraToScreenXMm = [23.5400, 18.6100, 23.5400, 18.6100, 25.8500, 25.8500, 25.8500, 14.9600, 60.7000, 76.8600, 74.4000, 74.5000, 74.5000, 74.5000]
+        let deviceCameraToScreenYMm = [8.6600, 8.0400, 8.6500, 8.0300, 10.6500, 10.6400, 10.6500, 9.7800, 8.7000, 7.3700, 9.9000, 10.5000, 10.5000, 10.5000]
+        
+        let deviceScreenWidthMm = [68.3600, 58.4900, 68.3600, 58.5000, 51.7000, 51.7000, 51.7000, 49.9200, 121.3000, 153.7100, 149.0000, 149.0000,149.0000, 149.0000]
+        let deviceScreenHeightMm = [121.5400, 104.0500, 121.5400, 104.0500, 90.3900, 90.3900, 90.3900, 74.8800, 161.2000, 203.1100, 198.1000, 198.1000, 198.1000, 198.1000]
+        
+        var index = -1
+        
+        for i in 0..<deviceNames.count {
+            if deviceNames[i] == deviceName {
+                index = i
+                break
+            }
+        }
+        if index == -1 {
+            return CGPoint()
+        }
+        let dx = deviceCameraToScreenXMm[index]
+        let dy = deviceCameraToScreenYMm[index]
+        let dw = deviceScreenWidthMm[index]
+        let dh = deviceScreenHeightMm[index]
+        
+        if labelOrientation == 1 {
+            xOut = xOut + Float(dx)
+            yOut = (-1)*(yOut) - Float(dy)
+        } else if labelOrientation == 2 {
+            xOut = xOut - Float(dx) + Float(dw)
+            yOut = (-1)*(yOut) + Float(dy) + Float(dh)
+        } else if labelOrientation == 3 {
+            xOut = xOut - Float(dy)
+            yOut = (-1)*(yOut) - Float(dx) + Float(dw)
+        } else if labelOrientation == 4 {
+            xOut = xOut + Float(dy) + Float(dh)
+            yOut = (-1)*(yOut) + Float(dx)
+        }
+        
+        if !useCM {
+            if (labelOrientation == 1 || labelOrientation == 2) {
+                xOut = (xOut * Float(labelActiveScreenW)) / Float(dw)
+                yOut = (yOut * Float(labelActiveScreenH)) / Float(dh)
+            } else if (labelOrientation == 3 || labelOrientation == 4) {
+                xOut = (xOut * Float(labelActiveScreenW)) / Float(dh)
+                yOut = (yOut * Float(labelActiveScreenH)) / Float(dw)
+            }
+        }
+        
+        if useCM {
+            xOut = xOut / 10;
+            yOut = yOut / 10;
+        }
+        
+        return CGPoint(x: Double(xOut), y: Double(yOut))
+    }
 }
 
 
@@ -71,7 +132,7 @@ struct PredictPoint{
 class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Propreties
-    let itrackerModel:Itracker = Itracker()
+    let itrackerModel:MyModel = MyModel()
     
     //MARK:- Protocol Method
     func detectEye(on image: CIImage) throws -> PredictPoint? {
@@ -154,7 +215,6 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
             let context = CGContext(data: data, width: Int(224), height: Int(224), bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer!), space: rgbColorSpace, bitmapInfo: bitmapInfo.rawValue)
             
             context?.draw(cgImage!, in: CGRect(x: 0, y: 0, width: 224, height: 224))
-            
             CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.init(rawValue: 0))
             return pixelBuffer!
         }

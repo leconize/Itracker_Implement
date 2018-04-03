@@ -14,15 +14,23 @@
 		8D0A9ADA1F2DE18400E4F62C /* CoreMLTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A9AD91F2DE18400E4F62C /* CoreMLTestTests.swift */; };
 		8D11F4051F3E014E00A2574D /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4031F3E013900A2574D /* CameraController.swift */; };
 		8D33835E1F8237DF00AC8DE5 /* TestResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D33835D1F8237DF00AC8DE5 /* TestResultViewController.swift */; };
-		8D88F00B1FBD838D008D65B5 /* Itracker.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F00A1FBD838D008D65B5 /* Itracker.mlmodel */; };
-		8D88F00E1FBD855A008D65B5 /* Itracker.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D88F00A1FBD838D008D65B5 /* Itracker.mlmodel */; };
+		8D4C4194206B844B00836C21 /* MyModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D8DCA18206765BA00E1F02A /* MyModel.mlmodel */; };
+		8D4C4195206B845B00836C21 /* UIImage+PixelBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8DCA1C2067C39A00E1F02A /* UIImage+PixelBuffer.swift */; };
+		8D4C4196206B845E00836C21 /* UIImage+Resize,Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC029A6206A25190040BB30 /* UIImage+Resize,Crop.swift */; };
+		8D4C4197206B846000836C21 /* CGRectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC029A8206A2BD00040BB30 /* CGRectExtension.swift */; };
 		8D8C52641F4D518600080D77 /* EyeGazeLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */; };
 		8D8C52651F4D518600080D77 /* EyeGazeLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */; };
+		8D8DCA19206765BA00E1F02A /* MyModel.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 8D8DCA18206765BA00E1F02A /* MyModel.mlmodel */; };
+		8D8DCA1B2067727E00E1F02A /* EyeGazeLogicRewrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8DCA1A2067727E00E1F02A /* EyeGazeLogicRewrite.swift */; };
+		8D8DCA1D2067C39A00E1F02A /* UIImage+PixelBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8DCA1C2067C39A00E1F02A /* UIImage+PixelBuffer.swift */; };
+		8DAE5C8A2068A89600E56E58 /* EyeGazeLogicRewrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D8DCA1A2067727E00E1F02A /* EyeGazeLogicRewrite.swift */; };
 		8DB070CC1F726CDE009C879F /* TestPredictPointConvert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DB070CB1F726CDE009C879F /* TestPredictPointConvert.swift */; };
 		8DB070CD1F726D94009C879F /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D11F4031F3E013900A2574D /* CameraController.swift */; };
 		8DB070CE1F726D9B009C879F /* DotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D0A9AC61F2DE18400E4F62C /* DotViewController.swift */; };
 		8DBFDED51F8FB66900775274 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8D0A9ACB1F2DE18400E4F62C /* Assets.xcassets */; };
 		8DBFDED71F8FB67E00775274 /* TestModelPredictValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DBFDED61F8FB67E00775274 /* TestModelPredictValue.swift */; };
+		8DC029A7206A25190040BB30 /* UIImage+Resize,Crop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC029A6206A25190040BB30 /* UIImage+Resize,Crop.swift */; };
+		8DC029A9206A2BD00040BB30 /* CGRectExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC029A8206A2BD00040BB30 /* CGRectExtension.swift */; };
 		8DC26B0F1F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */; };
 		8DC26B101F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */; };
 /* End PBXBuildFile section */
@@ -49,10 +57,14 @@
 		8D0A9ADB1F2DE18400E4F62C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D11F4031F3E013900A2574D /* CameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CameraController.swift; path = CoreMLTest/CameraController.swift; sourceTree = SOURCE_ROOT; };
 		8D33835D1F8237DF00AC8DE5 /* TestResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestResultViewController.swift; sourceTree = "<group>"; };
-		8D88F00A1FBD838D008D65B5 /* Itracker.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = Itracker.mlmodel; sourceTree = "<group>"; };
 		8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeGazeLogic.swift; sourceTree = "<group>"; };
+		8D8DCA18206765BA00E1F02A /* MyModel.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = MyModel.mlmodel; sourceTree = "<group>"; };
+		8D8DCA1A2067727E00E1F02A /* EyeGazeLogicRewrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyeGazeLogicRewrite.swift; sourceTree = "<group>"; };
+		8D8DCA1C2067C39A00E1F02A /* UIImage+PixelBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+PixelBuffer.swift"; sourceTree = "<group>"; };
 		8DB070CB1F726CDE009C879F /* TestPredictPointConvert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPredictPointConvert.swift; sourceTree = "<group>"; };
 		8DBFDED61F8FB67E00775274 /* TestModelPredictValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestModelPredictValue.swift; sourceTree = "<group>"; };
+		8DC029A6206A25190040BB30 /* UIImage+Resize,Crop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Resize,Crop.swift"; sourceTree = "<group>"; };
+		8DC029A8206A2BD00040BB30 /* CGRectExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGRectExtension.swift; sourceTree = "<group>"; };
 		8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowResultViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,15 +107,19 @@
 		8D0A9AC31F2DE18400E4F62C /* CoreMLTest */ = {
 			isa = PBXGroup;
 			children = (
+				8D8DCA18206765BA00E1F02A /* MyModel.mlmodel */,
 				8D0A9AC41F2DE18400E4F62C /* AppDelegate.swift */,
 				8D11F4031F3E013900A2574D /* CameraController.swift */,
 				8D8C52631F4D518600080D77 /* EyeGazeLogic.swift */,
 				8D0A9AC61F2DE18400E4F62C /* DotViewController.swift */,
-				8D88F00A1FBD838D008D65B5 /* Itracker.mlmodel */,
 				8DC26B0E1F6A5A3A00F5FF53 /* ShowResultViewController.swift */,
 				8D0A9AC81F2DE18400E4F62C /* Main.storyboard */,
 				8D0A9ACB1F2DE18400E4F62C /* Assets.xcassets */,
 				8D0A9AD01F2DE18400E4F62C /* Info.plist */,
+				8D8DCA1A2067727E00E1F02A /* EyeGazeLogicRewrite.swift */,
+				8D8DCA1C2067C39A00E1F02A /* UIImage+PixelBuffer.swift */,
+				8DC029A6206A25190040BB30 /* UIImage+Resize,Crop.swift */,
+				8DC029A8206A2BD00040BB30 /* CGRectExtension.swift */,
 			);
 			path = CoreMLTest;
 			sourceTree = "<group>";
@@ -221,10 +237,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D8DCA19206765BA00E1F02A /* MyModel.mlmodel in Sources */,
 				8D0A9AC71F2DE18400E4F62C /* DotViewController.swift in Sources */,
+				8D8DCA1B2067727E00E1F02A /* EyeGazeLogicRewrite.swift in Sources */,
 				8D0A9AC51F2DE18400E4F62C /* AppDelegate.swift in Sources */,
+				8DC029A7206A25190040BB30 /* UIImage+Resize,Crop.swift in Sources */,
+				8DC029A9206A2BD00040BB30 /* CGRectExtension.swift in Sources */,
+				8D8DCA1D2067C39A00E1F02A /* UIImage+PixelBuffer.swift in Sources */,
 				8DC26B0F1F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */,
-				8D88F00B1FBD838D008D65B5 /* Itracker.mlmodel in Sources */,
 				8D8C52641F4D518600080D77 /* EyeGazeLogic.swift in Sources */,
 				8D11F4051F3E014E00A2574D /* CameraController.swift in Sources */,
 			);
@@ -234,14 +254,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D4C4194206B844B00836C21 /* MyModel.mlmodel in Sources */,
 				8DB070CE1F726D9B009C879F /* DotViewController.swift in Sources */,
+				8D4C4195206B845B00836C21 /* UIImage+PixelBuffer.swift in Sources */,
+				8DAE5C8A2068A89600E56E58 /* EyeGazeLogicRewrite.swift in Sources */,
 				8DB070CD1F726D94009C879F /* CameraController.swift in Sources */,
 				8DB070CC1F726CDE009C879F /* TestPredictPointConvert.swift in Sources */,
-				8D88F00E1FBD855A008D65B5 /* Itracker.mlmodel in Sources */,
 				8DBFDED71F8FB67E00775274 /* TestModelPredictValue.swift in Sources */,
 				8D8C52651F4D518600080D77 /* EyeGazeLogic.swift in Sources */,
+				8D4C4197206B846000836C21 /* CGRectExtension.swift in Sources */,
 				8D0A9ADA1F2DE18400E4F62C /* CoreMLTestTests.swift in Sources */,
 				8DC26B101F6A5A3A00F5FF53 /* ShowResultViewController.swift in Sources */,
+				8D4C4196206B845E00836C21 /* UIImage+Resize,Crop.swift in Sources */,
 				8D33835E1F8237DF00AC8DE5 /* TestResultViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

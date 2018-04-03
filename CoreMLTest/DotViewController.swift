@@ -11,6 +11,9 @@ import CoreML
 
 struct DotPosition: Hashable{
     
+    /// This class is represent the position of dot in screen of the view.
+    /// reference how to implement the hasable protocol from https://developer.apple.com/documentation/swift/hashable this struct is copy of this.
+    
     var x:UInt32
     var y:UInt32
 
@@ -20,6 +23,10 @@ struct DotPosition: Hashable{
 
     static func ==(lhs: DotPosition, rhs: DotPosition) -> Bool {
         return lhs.x == rhs.x && lhs.y == rhs.y
+    }
+    
+    func toCGpoint() -> CGPoint {
+        return CGPoint(x: Double(self.x), y: Double(self.y))
     }
 
 }
@@ -39,6 +46,7 @@ class DotViewController: UIViewController {
     var dotPosition: DotPosition = DotPosition(x: 0, y: 0)
     var isProcessing: Bool = false
     var gazeLogic: EyeGazeLogic?
+    let newLogic: EyeGazeLogicRewrite = EyeGazeLogicRewrite()
     var result: [DotPosition: [PredictPoint]] = [:]
     lazy var circleDrawTimer: Timer = Timer.init()
     
@@ -69,6 +77,7 @@ class DotViewController: UIViewController {
     
     @objc func drawCircle(){
         let screenRect = UIScreen.main.bounds
+//        print(screenRect)
         if(isSpawnRandom){
             self.dotPosition.x = arc4random_uniform(UInt32(screenRect.width-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
             self.dotPosition.y = arc4random_uniform(UInt32(screenRect.height-DotViewController.circleRadius)) + UInt32(DotViewController.circleRadius)
@@ -128,27 +137,51 @@ extension DotViewController: CameraControllerDelegate{
     
     //MARK:- DelegateMethod
     func didCaptureVideoFrame(image: CIImage) {
-        if(!isProcessing){
-            DispatchQueue.global(qos: .userInteractive).async {
+//        guard let result = try? newLogic.detectEye(on: image) else {
+//            return
+//        }
+        if(!isProcessing) {
+            self.isProcessing = true
+            DispatchQueue.global().async {
                 do {
-                    self.isProcessing = true
-                    guard let result = try self.gazeLogic?.detectEye(on: image) else {
+                    let currentPosition = self.dotPosition // this is struct so it will copy the value instead of reference
+                    guard let result = try? self.newLogic.detectEye(on: image) else {
                         self.isProcessing = false
                         return
                     }
-                    if self.result[self.dotPosition] != nil{
-                        self.result[self.dotPosition]!.append(result)
-                    }
-                    else{
-                        self.result[self.dotPosition] = [result]
-                    }
+                    self.isProcessing = false
+                    let convert = result?.convertCoords(deviceName: "iPhone 6", labelOrientation: 1, labelActiveScreenW: 375, labelActiveScreenH: 667, useCM: false)
+                    print("result = \(result!)")
+                    print("convert result = \(convert)")
+                    print("currentPos = \(currentPosition)")
+                    print("distance = \(convert?.euclideanDistance(from: currentPosition.toCGpoint()))")
+                    
                 }
-                catch{
-                    print(error)
-                }
-                self.isProcessing = false
             }
         }
+//        print(result ?? "fail")
+//        if(!isProcessing){
+//            DispatchQueue.global(qos: .userInteractive).async {
+//                do {
+//                    self.isProcessing = true
+//                    guard let result = try self.gazeLogic?.detectEye(on: image) else {
+//                        self.isProcessing = false
+//                        return
+//                    }
+//                    if self.result[self.dotPosition] != nil{
+//                        self.result[self.dotPosition]!.append(result)
+//                    }
+//                    else{
+//                        self.result[self.dotPosition] = [result]
+//                    }
+//                }
+//                catch{
+//                    print(error)
+//                }
+//                self.isProcessing = false
+//            }
+//        }
+        
     }
     
 }

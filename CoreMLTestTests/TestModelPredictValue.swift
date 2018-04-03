@@ -11,7 +11,6 @@ import CoreML
 
 class TestModelPredictValue: XCTestCase {
     
-    let itracker: Itracker = Itracker()
     let eyeGazeLogic: EyeGazeLogic = EyeGazeLogic()
     
     override func setUp() {
@@ -25,8 +24,8 @@ class TestModelPredictValue: XCTestCase {
     }
     
     func calculateFaceGrid(imageBound: CGRect, gridSize:CGFloat, faceBound:CGRect) -> MLMultiArray?{
-        let scaleX = gridSize / imageBound.width
-        let scaleY = gridSize / imageBound.height
+        let scaleX =  imageBound.width / gridSize
+        let scaleY =  imageBound.height / gridSize
         
         guard let faceGridArray = try? MLMultiArray(shape: [625,1, 1], dataType: .double) else{
             return nil
@@ -77,16 +76,12 @@ class TestModelPredictValue: XCTestCase {
 //        100, 127.5, 450, 450
         let faceBound: CGRect = CGRect(x: 100, y: 127.5, width: 450, height: 450)
         let faceGrid = calculateFaceGrid(imageBound: imageBound, gridSize: gridSize, faceBound: faceBound)
+        
         for i in 0..<25 {
             for j in 0..<25 {
                 print(faceGrid![i*25+j], separator: " ", terminator: " ")
             }
             print(" ")
-        }
-        do {
-            try eyeGazeLogic.predict(faceGrid: faceGrid!, imageFace: facePixel, imageLeft: leftPixel, imageRight: rightPixel)
-        } catch {
-            print(error)
         }
         
     }

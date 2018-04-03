@@ -125,16 +125,14 @@ class CameraController: NSObject{
     }
 }
 
-@available(iOS 11.0, *)
 extension CameraController: AVCaptureVideoDataOutputSampleBufferDelegate{
 
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let  _delegate = self.delegate else { return }
         if(!isProcessing){
             DispatchQueue.global(qos: .background).async {
-                let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-                var image = CIImage.init(cvImageBuffer: imageBuffer!)
-                image = image.oriented(CGImagePropertyOrientation(rawValue: 5)!)
+                guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+                let image = CIImage(cvImageBuffer: imageBuffer).oriented(CGImagePropertyOrientation(rawValue: 5)!)
                 _delegate.didCaptureVideoFrame(image: image)
             }
         }
