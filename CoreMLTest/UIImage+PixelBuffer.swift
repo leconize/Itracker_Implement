@@ -54,9 +54,8 @@ extension UIImage {
         UIGraphicsPushContext(context)
         context.translateBy(x: 0, y: CGFloat(height))
         context.scaleBy(x: 1, y: -1)
-        self.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+        self.draw(in: CGRect(x: 0, y: 0, width: width, height: height)) // https://developer.apple.com/documentation/uikit/uiimage/1624092-draw This function will automatically scale down the image
         UIGraphicsPopContext()
-        
         CVPixelBufferUnlockBaseAddress(pixelBuffer, CVPixelBufferLockFlags(rawValue: 0))
         return pixelBuffer
     }
