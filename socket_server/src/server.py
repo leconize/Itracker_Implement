@@ -12,10 +12,6 @@ class Server():
         return
 
     def start(self, loop):
-        # socket_server = socket.socket()
-        # socket_server.bind((self.host, self.port))
-        # socket_server.listen(5)
-        # socket_server.setblocking(False)
         coro = asyncio.start_server(self.handle_client, self.host, self.port, loop=loop)
         self.server = loop.run_until_complete(coro)
     
