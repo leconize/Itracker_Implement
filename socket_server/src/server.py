@@ -8,8 +8,17 @@ class Server():
         self.port = port
 
     async def handle_client(self, reader, writer):
+        data = await reader.read(100)
+        message = data.decode()
+        addr = writer.get_extra_info('peername')
+        print("Received %r from %r" % (message, addr))
+
+        print("Send: %r" % message)
+        writer.write(data)
+        await writer.drain()
+
+        print("Close the client socket")
         writer.close()
-        return
 
     def start(self, loop):
         coro = asyncio.start_server(self.handle_client, self.host, self.port, loop=loop)
@@ -17,7 +26,6 @@ class Server():
     
     def close(self):
         self.server.close()
-        self.server
  
 
 if __name__ == "__main__":

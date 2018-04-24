@@ -1,0 +1,5 @@
+database:
+  dbname: eye_gaze_db
+  user: admin
+  host: localhost
+  password: mysecretpassword
