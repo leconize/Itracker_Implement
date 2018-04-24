@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import CoreImage
 import CoreML
+import Vision
 
 protocol EyeGazeLogicProtocol {
     func detectEye(on image:CIImage) throws -> PredictPoint?
@@ -32,8 +33,8 @@ struct PredictPoint{
         let dY = 8.03
         let dWidth = 58.5
         let dHeight = 104.05
-        var x = posX
-        var y = posY
+        var x = posX*10
+        var y = posY*10
         switch UIApplication.shared.statusBarOrientation {
         case .portrait:
             x += dX
@@ -62,6 +63,67 @@ struct PredictPoint{
         }
         return CGPoint(x: x, y: y)
     }
+    
+    func convertCoords(deviceName: String, labelOrientation: Int, labelActiveScreenW: Int, labelActiveScreenH: Int, useCM: Bool) -> CGPoint {
+        
+        // First, convert input to millimeters to be compatible with AppleDeviceData.mat
+        var xOut:Float = Float(self.posX * 10)
+        var yOut:Float = Float(self.posY * 10)
+        let deviceNames = ["iPhone 6s Plus", "iPhone 6s", "iPhone 6 Plus", "iPhone 6", "iPhone 5s", "iPhone 5c", "iPhone 5", "iPhone 4s", "iPad Mini", "iPad Air 2", "iPad Air", "iPad 4", "iPad 3", "iPad 2"]
+        
+        let deviceCameraToScreenXMm = [23.5400, 18.6100, 23.5400, 18.6100, 25.8500, 25.8500, 25.8500, 14.9600, 60.7000, 76.8600, 74.4000, 74.5000, 74.5000, 74.5000]
+        let deviceCameraToScreenYMm = [8.6600, 8.0400, 8.6500, 8.0300, 10.6500, 10.6400, 10.6500, 9.7800, 8.7000, 7.3700, 9.9000, 10.5000, 10.5000, 10.5000]
+        
+        let deviceScreenWidthMm = [68.3600, 58.4900, 68.3600, 58.5000, 51.7000, 51.7000, 51.7000, 49.9200, 121.3000, 153.7100, 149.0000, 149.0000,149.0000, 149.0000]
+        let deviceScreenHeightMm = [121.5400, 104.0500, 121.5400, 104.0500, 90.3900, 90.3900, 90.3900, 74.8800, 161.2000, 203.1100, 198.1000, 198.1000, 198.1000, 198.1000]
+        
+        var index = -1
+        
+        for i in 0..<deviceNames.count {
+            if deviceNames[i] == deviceName {
+                index = i
+                break
+            }
+        }
+        if index == -1 {
+            return CGPoint()
+        }
+        let dx = deviceCameraToScreenXMm[index]
+        let dy = deviceCameraToScreenYMm[index]
+        let dw = deviceScreenWidthMm[index]
+        let dh = deviceScreenHeightMm[index]
+        
+        if labelOrientation == 1 {
+            xOut = xOut + Float(dx)
+            yOut = (-1)*(yOut) - Float(dy)
+        } else if labelOrientation == 2 {
+            xOut = xOut - Float(dx) + Float(dw)
+            yOut = (-1)*(yOut) + Float(dy) + Float(dh)
+        } else if labelOrientation == 3 {
+            xOut = xOut - Float(dy)
+            yOut = (-1)*(yOut) - Float(dx) + Float(dw)
+        } else if labelOrientation == 4 {
+            xOut = xOut + Float(dy) + Float(dh)
+            yOut = (-1)*(yOut) + Float(dx)
+        }
+        
+        if !useCM {
+            if (labelOrientation == 1 || labelOrientation == 2) {
+                xOut = (xOut * Float(labelActiveScreenW)) / Float(dw)
+                yOut = (yOut * Float(labelActiveScreenH)) / Float(dh)
+            } else if (labelOrientation == 3 || labelOrientation == 4) {
+                xOut = (xOut * Float(labelActiveScreenW)) / Float(dh)
+                yOut = (yOut * Float(labelActiveScreenH)) / Float(dw)
+            }
+        }
+        
+        if useCM {
+            xOut = xOut / 10;
+            yOut = yOut / 10;
+        }
+        
+        return CGPoint(x: Double(xOut), y: Double(yOut))
+    }
 }
 
 
@@ -70,12 +132,10 @@ struct PredictPoint{
 class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Propreties
-    let itrackerModel:Itracker = Itracker()
-    var tempImage: CIImage?
-    let context: CIContext = CIContext()
+    let itrackerModel:MyModel = MyModel()
     
     //MARK:- Protocol Method
-    func detectEye(on image: CIImage) throws -> PredictPoint?{
+    func detectEye(on image: CIImage) throws -> PredictPoint? {
         let accuracy = [CIDetectorAccuracy: CIDetectorAccuracyLow]
         let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: accuracy)
         let faces = faceDetector?.features(in: image)
@@ -95,34 +155,22 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
                 guard let facegrid = calculateFaceGrid(imageBound: image.extent, gridSize: 25, faceBound: face.bounds) else {
                     throw PreprocessError.failToCreateFaceGrid
                 }
+                print(faceScaleImage.extent)
+                print(rightEyeImage.extent)
+                print(leftEyeImage.extent)
                 do{
-                    guard let facePixelBuffer = toCreataImage(image: faceScaleImage) else {
-                        print("face")
+                    guard let facePixelBuffer = toPixelBuffer(image: faceScaleImage) else {
                         throw PreprocessError.faceImageError
                     }
-                    guard let leftEyePixelBuffer = toCreataImage(image: leftEyeImage) else {
-                        print("left")
+                    guard let leftEyePixelBuffer = toPixelBuffer(image: leftEyeImage) else {
                         throw PreprocessError.leftEyeError
                     }
-                    guard let rightEyePixelBuffer = toCreataImage(image: rightEyeImage) else {
+                    guard let rightEyePixelBuffer = toPixelBuffer(image: rightEyeImage) else {
                         throw PreprocessError.rightEyeError
                     }
-                    let result = try itrackerModel.prediction(facegrid: facegrid
-                        , image_face: facePixelBuffer
-                        , image_left: leftEyePixelBuffer
-                        , image_right: rightEyePixelBuffer)
-                    print("result = ")
-                    for index in 0...5{
-                        print(result.fc3[index])
-                    }
-                    let predictPoint = PredictPoint(
-                        posX: Double(truncating: result.fc3[0])
-                        , posY: Double(truncating: result.fc3[1]))
-                    return predictPoint
-                    
+                    return try predict(faceGrid: facegrid, imageFace: facePixelBuffer, imageLeft: leftEyePixelBuffer, imageRight: rightEyePixelBuffer)
                 }
                 catch{
-                    print(error)
                     return nil
                 }
             }
@@ -130,13 +178,44 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
         return nil
     }
     
-    //MARK:- repos
-    func toCreataImage(image: CIImage) -> CVPixelBuffer?{
+    func predict(faceGrid: MLMultiArray
+        , imageFace:CVPixelBuffer
+        , imageLeft:CVPixelBuffer
+        , imageRight:CVPixelBuffer) throws -> PredictPoint {
+            let result = try itrackerModel.prediction(facegrid: faceGrid
+                , image_face: imageFace
+                , image_left: imageLeft
+                , image_right: imageRight)
+            for index in 0...5{
+                print(result.fc3[index])
+            }
+            let predictPoint = PredictPoint(
+                posX: Double(truncating: result.fc3[0])
+                , posY: Double(truncating: result.fc3[1]))
+            return predictPoint
+    }
+    
+    //MARK:- convert Method
+    func toPixelBuffer(image: CIImage) -> CVPixelBuffer? {
         var pixelBuffer: CVPixelBuffer? = nil
         let status = CVPixelBufferCreate(kCFAllocatorDefault, 224, 224, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
-        if (status == kCVReturnSuccess) {
-            let context = CIContext()
-            context.render(image, to: pixelBuffer!, bounds: CGRect.init(x: 0, y: 0, width: 224, height: 224), colorSpace: CGColorSpaceCreateDeviceRGB())
+        if (status == kCVReturnSuccess){
+            guard let _pixelBuffer = pixelBuffer else { fatalError() }
+            CVPixelBufferLockBaseAddress(_pixelBuffer, CVPixelBufferLockFlags.init(rawValue: 0))
+            let ciContext = CIContext()
+//            ciContext.render(image
+//                , to: _pixelBuffer
+//                , bounds: CGRect.init(x: image.extent.origin.x
+//                , y: image.extent.origin.y, width: 224, height: 224)
+//                , colorSpace: CGColorSpaceCreateDeviceRGB())
+            let cgImage = ciContext.createCGImage(image, from: image.extent)
+            let data = CVPixelBufferGetBaseAddress(pixelBuffer!)
+            let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+            let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue)
+            let context = CGContext(data: data, width: Int(224), height: Int(224), bitsPerComponent: 8, bytesPerRow: CVPixelBufferGetBytesPerRow(pixelBuffer!), space: rgbColorSpace, bitmapInfo: bitmapInfo.rawValue)
+            
+            context?.draw(cgImage!, in: CGRect(x: 0, y: 0, width: 224, height: 224))
+            CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags.init(rawValue: 0))
             return pixelBuffer!
         }
         else{
@@ -147,23 +226,26 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
     
     //MARK:- Preprocess Method
     func getEyeImageRect(posX: CGFloat, posY: CGFloat, size: CGFloat) -> CGRect{
-        let reg = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
-        return reg
+        let eyeRect = CGRect(x: posX+size/2, y: posY+size/2, width: -size, height: -size)
+        return eyeRect
     }
     
+
     func calculateFaceGrid(imageBound: CGRect, gridSize:CGFloat, faceBound:CGRect) -> MLMultiArray?{
         let scaleX = gridSize / imageBound.width
         let scaleY = gridSize / imageBound.height
         
-        guard let faceGridArray = try? MLMultiArray(shape: [625,1, 1], dataType: .double) else{
+        guard let faceGridArray = try? MLMultiArray(shape: [625,1, 1], dataType: .double) else {
             return nil
         }
         
-        var xLow = faceBound.origin.x * scaleX
-        var yLow = faceBound.origin.y * scaleY
+        let calY = imageBound.height - faceBound.origin.y - faceBound.height
         
-        let width = faceBound.size.width * scaleX
-        let height = faceBound.size.height * scaleY
+        var xLow = (faceBound.origin.x * scaleX).rounded() + 1
+        var yLow = (calY * scaleY).rounded() + 1
+        
+        let width = (faceBound.size.width * scaleX).rounded()
+        let height = (faceBound.size.height * scaleY).rounded()
         
         var xHi = xLow + width - 1
         var yHi = yLow + height - 1
@@ -176,7 +258,7 @@ class EyeGazeLogic: EyeGazeLogicProtocol{
         for index in 0..<(Int(gridSize*gridSize)){
             let row = CGFloat(Int( CGFloat(index) / gridSize))
             let column = CGFloat(index%Int(gridSize))
-            if(row <= xHi && row >= xLow && column <= yHi && column >= yLow){
+            if(row <= yHi - 1 && row >= yLow - 1 && column <= xHi - 1 && column >= xLow - 1){
                 faceGridArray[index] = 1
             }
             else{
